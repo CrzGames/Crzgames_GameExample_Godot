@@ -136,7 +136,10 @@
   1. Requirements : MacOS X >= 15.0.0
   2. Download and Install xCode >= 16.4.0
   3. Download and Install Command Line Tools : xcode-select --install
-  4. Download and Install CMake >= 3.25 : brew install cmake
+  4. Download and Install brew.
+  5. Download and Install CMake >= 3.25 : brew install cmake
+  6. Download and Install scons >= 4.0.0 : brew install scons
+  7. Download and Install Python >= 3.8.0 : brew install python
   ```
   
 4. Avant toute compilation, exécute le script suivant :
@@ -160,9 +163,8 @@ Ce script va :
 ```bash
 cmake -P cmake/setup_dependencies.cmake
 ```
-3. Recompiler Godot avec les scripts situé dans `build-scripts/`, par exemple pour Windows : `.\build-scripts\windows\build_windows_editor_dev.bat`
-4. Supprimer `.godot/` dans le projet
-5. Ouvrir l'editeur Godot qui à était recompiler avec la nouvelle version de Godot, situé par exemple dans : `dependencies/godot/bin/godot.windows.editor.dev.x86_64.dev.exe`. Ensuite il faut ouvrir le dossier du jeu depuis l'editeur Godot qui est actuellement ouvert.
+3. Recompiler l'editeur Godot avec les scripts situé dans `build-scripts/`, par exemple pour Windows : `.\build-scripts\windows\build_windows_editor_dev.bat`
+4. Ouvrir l'editeur Godot qui à était recompiler avec la nouvelle version de Godot, situé par exemple pour Windows dans : `dependencies/godot/bin/godot.windows.editor.dev.x86_64.dev.console.exe`. Ensuite il faut ouvrir le dossier du jeu depuis l'editeur Godot qui est actuellement ouvert.
 
 <br /><br /><br /><br />
 
