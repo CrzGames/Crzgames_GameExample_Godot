@@ -1,4 +1,4 @@
-# Crzgames - Game Example - Godot
+# Crzgames - Template Project Godot
 
 ## 🛠 Tech Stack
 - C++ / GDScript (Language)
