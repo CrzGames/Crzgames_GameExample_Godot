@@ -4,6 +4,7 @@ import importlib
 importlib.import_module("custom_godot_engine_options")
 
 # --------------- Build PROD DEBUG ---------------
+production="yes"
 optimize = "speed"
 debug_symbols = "yes"
 separate_debug_symbols = "yes"

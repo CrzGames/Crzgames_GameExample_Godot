@@ -98,75 +98,8 @@
 <br /><br /><br /><br />
 
 
-## 🎯 Raisons techniques des versions minimales et autres par plateforme
-
-### Windows
-- **Version minimale** : Windows 10+
-- **Raison** :
-  - SDL3 API GPU repose sur Direct3D12 (Level Feature 11_1)
-  - Windows ARM64 nécessite également Windows 10+
-
-### macOS
-- **Version minimale** : macOS 15.0+
-- **Raison** :
-  - Requis par ONNX Runtime pour C++20 (macOS 13.4+)
-  - Requis par MSL version 3.2.0 (macOS 15.0+)
-
-### iOS/iPadOS
-- **Version minimale** : iOS/iPadOS 18.0+
-- **Raison** :
-  - SDL3 API GPU supporté depuis iOS/iPadOS 13.0
-  - CoreML pour ONNX Runtime nécessite iOS/iPadOS 13.0+
-  - Requis par MSL version 3.2.0 (iOS/iPadOS 18.0+)
-  - Pas de librairie pour iOS/iPadOS simulator parce que SDL3 GPU ne le supporte pas.
-
-### Android
-- **Version minimale** : Android 9.0 (API 28+)
-- **Raison** :
-  - SDL3 GPU utilise Vulkan (introduit à partir d'Android 7.0)
-  - ONNX Runtime avec NNAPI demande Android 8.1+ et recommande Android 9.0+
-  - Pas d'architecture Android : x86_64 et x86, parce que ONNX Runtime compatible que : arm64-v8a / armeabi-v7a
-
-### Linux
-- **Version minimale** : glibc 2.35+
-- **Raison** :
-  - CI/CD basée sur Ubuntu 22.04 LTS (donc librairie RC2D + dépendences construite sur glibc 2.35)
-  - ONNX Runtime nécessite C++20 (glibc 2.31+)
-
-### Steam Deck / Steam Linux
-- **Version minimale** : Steam Linux Runtime 3.0 (Sniper)
-- **Raison** :
-  - Steam recommande l'utilisation du runtime Sniper pour tous les nouveaux jeux compatibles Linux.
-  - Le Steam Deck est livré avec SteamOS 3.0+, basé sur Arch Linux, et embarque nativement le runtime Sniper.
-  - Toutes les dépendances système (glibc ≥ 2.35, Mesa Vulkan ≥ 22, etc.) sont fournies via le runtime, assurant un environnement stable et cohérent.
-
-<br /><br /><br /><br />
-
-
-## 📦 Dépendances principales
-
-| Librairie              | Utilisation principale                                       | Intégration                |
-|------------------------|--------------------------------------------------------------|----------------------------|
-| **rres**               | Format de ressources binaire custom (emballage/déballage de fichiers, images, shaders, polices, sons, etc.) | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
-| **AES**                | Implémentation légère d’AES-128 pour le chiffrement/déchiffrement, utilisée par la librairie `rres` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
-| **LZ4**                | Compression/décompression ultra-rapide, utilisée par la librairie `rres` et le module `RC2D_data` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |
-| **Monocypher**         | 	Librairie de cryptographie moderne (hashs, signatures, échange de clés), utilisée par la librairie `rres` | `Statique – Fichiers intégrés directement dans le code source, pas besoin de compilation séparée` |               |
-| **SDL3**               | Moteur principal, gestion entrée/sortie, rendu GPU           | `Obligatoire`                |
-| **SDL3_image**         | Chargement des images                                        | `Obligatoire`                |
-| **SDL3_ttf**           | Rendu de polices TrueType                                    | `Obligatoire`                |
-| **SDL3_mixer**         | Gestion du mixage audio (WAV, MP3, OGG...)                   | `Obligatoire`                |
-| **SDL3_shadercross**   | Transpilation code HLSL → MSL/SPIR-V/DXIL/METALLIB/PSSL           | `Activé par défault mais optionnel`. Passé à CMake: RC2D_GPU_SHADER_HOT_RELOAD_ENABLED=OFF/ON. Si RC2D_GPU_SHADER_HOT_RELOAD_ENABLED est à ON alors SDL3_shadercross sera link avec ces dépendences pour le rechargement à chaud des shaders à l'execution pour le temps du développement, sinon pour la production passé RC2D_GPU_SHADER_HOT_RELOAD_ENABLED à OFF et utilisé SDL3_shadercross en mode CLI pour la compilation hors ligne des shaders |
-| **RCENet**             | Fork de ENet (Communication UDP)                             | `Activé par défault mais optionnel`, mais le module `RC2D_net` ne sera pas utilisable si désactiver. Passé à CMake : RC2D_NET_MODULE_ENABLED=OFF/ON |
-| **OpenSSL**            | Hashing, Chiffrement, Compression..etc                       | `Activé par défault mais optionnel`, mais le module `RC2D_data` ne sera pas utilisable si désactiver. Passé à CMake : RC2D_DATA_MODULE_ENABLED=OFF/ON |
-| **ONNX Runtime**       | Exécution de modèles ONNX pour l'inférence                   | `Activé par défault mais optionnel`, mais le module `RC2D_onnx` ne sera pas utilisable si désactiver. Passé à CMake : RC2D_ONNX_MODULE_ENABLED=OFF/ON |
-| **cJSON**       | Librairie JSON   | `Obligatoire` |
-
-<br /><br /><br /><br />
-
-
 ## ⚙️ Setup Environment Development
-1. Cloner le projet, penser à clone le projet à la racine du disque dur C:/
-   sinon il y a un gros risque pendant la compilation de certaines dépendences de se retrouver avec un probleme de chemin trop long :
+1. Cloner le projet :
   ```bash
   git clone git@github.com:CrzGames/Crzgames_RC2DCore.git
   ```
@@ -182,6 +115,7 @@
      irm get.scoop.sh | iex (pour installer faire la touche ENTER, permet dinstaller)
   6. Installer : <br />
      python -m pip install scons
+  7. Installer le SDK Vulkan pour la couche de validation (debug shaders..etc) : https://vulkan.lunarg.com/sdk/home
 
 
 
@@ -232,8 +166,7 @@ cmake -P cmake/setup_dependencies.cmake
 
 
 ## 🔄 Cycle Development
-1. Par défault `RC2D_BUILD_EXAMPLES` est configurer à `ON` dans le `CMakelists.txt`, il faudra le remettre à `ON` si il à été désactiver.
-2. Générer le projet du jeu d'exemple (le projet situé dans examples/)
+1. Générer le projet du jeu d'exemple
 ```bash
 # Linux - x64
 chmod +x ./build-scripts/linux-x64.sh
