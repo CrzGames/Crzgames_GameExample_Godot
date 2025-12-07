@@ -1,5 +1,8 @@
 @echo off
-cd /d "%~dp0dependencies\godot"
+cd /d "%~dp0..\..\dependencies\godot" || (
+    echo [ERROR] Impossible de trouver le dossier dependencies\godot
+    exit /b 1
+)
 
 echo ---- BUILD WINDOWS TEMPLATE PROD ----
 scons platform=windows target=template_release profile=..\..\build-scripts\build_profile_prod.py
