@@ -155,12 +155,14 @@ Ce script va :
 
 
 ## 🔄 Updating Dependencies
-Pour mettre à jour une ou des dépendance :
 1. Modifiez le tag/commit_sha dans `dependencies.txt` de la librairie souhaiter.
 2. Exécutez le script à la racine du projet :
 ```bash
 cmake -P cmake/setup_dependencies.cmake
 ```
+3. Recompiler Godot avec les scripts situé dans `build-scripts/`, par exemple pour Windows : `.\build-scripts\windows\build_windows_editor_dev.bat`
+4. Supprimer `.godot/` dans le projet
+5. Ouvrir l'editeur Godot qui à était recompiler avec la nouvelle version de Godot, situé par exemple dans : `dependencies/godot/bin/godot.windows.editor.dev.x86_64.dev.exe`. Ensuite il faut ouvrir le dossier du jeu depuis l'editeur Godot qui est actuellement ouvert.
 
 <br /><br /><br /><br />
 
