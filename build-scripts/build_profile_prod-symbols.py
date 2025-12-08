@@ -5,7 +5,7 @@ importlib.import_module("custom_godot_engine_options")
 
 # --------------- Build PROD DEBUG ---------------
 production="yes"
-optimize = "speed"
+optimize = "speed_trace"
 debug_symbols = "yes"
 separate_debug_symbols = "yes"
 use_static_cpp = "yes"

@@ -27,7 +27,6 @@ echo -------------------------
   --editor ^
   --verbose ^
   --debug ^
-  --print-fps ^
   --gpu-validation ^
   --gpu-abort
 REM bug pour le moment : --generate-spirv-debug-info
