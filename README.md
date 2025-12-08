@@ -1,7 +1,7 @@
 # Crzgames - Template Project Godot
 
 ## 🛠 Tech Stack
-- C++ / GDScript (Language)
+- C++ / GDScript (Language) (Infos : Godot utilise C++ 17, mais on peux utilisé la version qu'ont souhaite pour nos propre module et extension GDExtension)
 - CI / CD (Github Actions)
 - CMake / SCons (Build script)
 - Compiler (GCC, CL, Clang, NDK)
