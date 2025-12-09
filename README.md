@@ -191,7 +191,7 @@ Lancer les test unitaires :
 # Structure (exemple), préfixé le nom des .h par le nom du module donc test_summator_quelqueschoses
 # 1er fichier de test : "modules/summator/tests/test_summator_toto1.h
 # 2er fichier de test : "modules/summator/tests/test_summator_toto2.h
-./bin/<godot_binary_editor> --test --source-file="*test_summator*" --success
+./path/to/<godot_binary_editor> --test --source-file="*test_summator*" --success
 ```
 
 <br /><br /><br /><br />
@@ -211,10 +211,11 @@ chmod +x ./build-scripts/macos/build_macos_editor.sh
 chmod +x ./build-scripts/linux/build_linux_editor.sh
 ./build-scripts/linux/build_linux_editor.sh
 ```
-2. Lancer l'editeur Godot Engine après qu'il à était compiler :
+2. Ouvrir l'executable de l'editeur Godot Engine ou ouvrir l'executable du jeu sans l'editeur (comme si on faisais run depuis l'editeur Godot) :
 ```bash
 # Windows :
-.\build-scripts\windows\run_windows_editor.bat
+.\build-scripts\windows\run_windows_editor.bat # Editor
+.\build-scripts\windows\run_windows_game.bat   # Game
 
 # macOS
 
