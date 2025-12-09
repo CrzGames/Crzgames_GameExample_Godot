@@ -20,10 +20,9 @@ mymodule/
   SCsub
   register_types.h
   register_types.cpp
-  (vos fichiers .cpp / .h)
   my_class.h
   my_class.cpp
-  ...
+  ... (vos fichiers .cpp / .h)
 ```
 
 Rôle de chaque fichier :
