@@ -77,7 +77,7 @@ godot/              # code sources du moteur
 <repo>/              # notre repo
   dependencies/
     godot/           # code sources du moteur
-  modules/
+  modules/           # notre dossier modules à nous et pas directement le dossier modules du moteur Godot
     summator/
       ...
 ```
