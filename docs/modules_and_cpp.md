@@ -115,7 +115,7 @@ public:
 👉 Cette classe est **invisible pour Godot** (GDScript, inspecteur, scènes),  
 mais **totalement utilisable dans votre code C++**, comme dans n’importe quel projet C++ classique.
 
-Vous pouvez l’utiliser à l’intérieur d’autres classes C++ (y compris des Nodes exposés) pour faire autant de POO que vous voulez : héritage multiple, interfaces, patterns, etc.
+Vous pouvez l’utiliser à l’intérieur d’autres classes C++ (y compris des Nodes/Class exposés) pour faire autant de POO que vous voulez : héritage multiple, interfaces, patterns, etc.
 
 ### 2.2. Classe C++ exposé à Godot
 
