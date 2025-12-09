@@ -288,7 +288,7 @@ GDREGISTER_ABSTRACT_CLASS(UnitBase);
 
 ---
 
-### 4.4 Classe Godot (exposée et Node ou Resource visible)
+### 4.4 Classe Godot (exposée)
 
 ➡️ Hérite de `Object, Node..etc`, **visible** dans l’éditeur via **Add Node** et instanciable via GDScript (`MyClass.new()`).
 
