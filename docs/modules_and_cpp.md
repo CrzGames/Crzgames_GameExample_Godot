@@ -59,7 +59,7 @@ Vous pouvez soit :
 - mettre votre module **dans le dossier `modules/` du moteur Godot**, par ex. :
 
 ```text
-godot/              # code sources du moteur
+godot/              # code sources du moteur (repository github de godot)
   modules/
     summator/
       config.py
@@ -75,7 +75,7 @@ godot/              # code sources du moteur
 ```text
 <repo>/              # notre repo
   dependencies/
-    godot/           # code sources du moteur
+    godot/           # code sources du moteur (repository github de godot)
   modules/           # notre dossier modules à nous et pas directement le dossier modules du moteur Godot
     summator/
       ...
