@@ -94,7 +94,7 @@ scons platform=windows target=editor custom_modules=../modules
 
 ## 2. Exposée ou non nos classes C++ dans Godot
 
-### 2.1. Classe C++ “pure” non exposée à Godot
+### 2.1. Classe C++ non exposée à Godot
 
 Si vous écrivez une simple classe C++ comme ceci :
 
