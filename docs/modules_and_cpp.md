@@ -16,10 +16,10 @@ Dans un dossier `mymodule/`, on retrouve au minimum :
 
 ```text
 mymodule/
-  config.py
-  SCsub
-  register_types.h
-  register_types.cpp
+  config.py           # obligatoire, sensible case
+  SCsub               # obligatoire, sensible case
+  register_types.h    # obligatoire, sensible case
+  register_types.cpp  # obligatoire, sensible case
   my_class.h
   my_class.cpp
   ... (vos fichiers .cpp / .h)
