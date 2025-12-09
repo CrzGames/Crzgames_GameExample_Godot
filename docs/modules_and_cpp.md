@@ -379,6 +379,12 @@ void initialize_mymodule_module(ModuleInitializationLevel p_level) {
 
     ClassDB::register_class<MySystemNode>();
 }
+
+void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
+    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+        return;
+    }
+}
 ```
 
 Après compilation :
