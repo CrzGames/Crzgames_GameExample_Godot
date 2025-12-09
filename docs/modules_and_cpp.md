@@ -50,7 +50,7 @@ scons platform=windows target=editor custom_modules=../modules
 
 ## 2. GDCLASS, ClassDB, et visibilité dans Godot
 
-### 2.1. Sans `GDCLASS` : classe C++ “pure” non exposée
+### 2.1. Classe C++ “pure” non exposée
 
 Si vous écrivez une simple classe C++ comme ceci :
 
