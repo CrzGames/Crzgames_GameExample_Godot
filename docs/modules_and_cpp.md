@@ -242,7 +242,7 @@ GDREGISTER_INTERNAL_CLASS(NetworkPeerInternal);
 
 ### 4.3 Classe abstraite Godot (exposée)
 
-➡️ Visible dans Godot, mais **non instanciable**.  
+➡️ Hérite de `Object, Node..etc`, **visible** dans l’éditeur via **Add Node** et **non instanciable** depuis GDScript.
 
 ```cpp
 // unit_base.h
@@ -290,7 +290,7 @@ GDREGISTER_ABSTRACT_CLASS(UnitBase);
 
 ### 4.4 Classe Godot (exposée et Node ou Resource visible)
 
-➡️ Visible dans l'éditeur via **Add Node**, instanciable en script via GDScript (`MyClass.new()`).
+➡️ Hérite de `Object, Node..etc`, **visible** dans l’éditeur via **Add Node** et instanciable via GDScript (`MyClass.new()`).
 
 ### Exemple : Resource custom (`UnitStats`)
 
