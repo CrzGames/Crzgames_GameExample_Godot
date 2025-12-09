@@ -5,7 +5,7 @@
 - CI / CD (Github Actions)
 - CMake / SCons (Build script)
 - Compiler (GCC, CL, Clang, NDK)
-- Godot v4.5.1
+- Projet de jeu Godot comme exemple (Créer à partir de l'editeur Godot v4.5.1)
 
 <br /><br /><br /><br />
 
@@ -14,21 +14,20 @@
 
 ```
 📦 Crzgames_TemplateProjectGodot
-├── 📁 .github                        # Configuration GitHub (workflows CI/CD)
-├── 📁 build-scripts                  # Scripts de build personnalisés (.sh / .bat), puis les scripts utilise le CMakelists.txt
+├── 📁 .github                        # Dossier GitHub Actions (workflows CI/CD)
+├── 📁 build-scripts                  # Scripts de build/run personnalisés (.sh / .bat)
 ├── 📁 cmake                          
 │   └── 📄 setup_dependencies.cmake   # Script CMake chargé de lire `dependencies.txt` et cloner/configurer les dépendances dans `/dependencies`
 ├── 📁 dependencies (git ignored)     # Répertoire local contenant les dépendances clonées (ignoré par Git pour ne pas polluer le repo)
-│   ├── 📁 godot                    , # Extension SDL3 pour le rendu de polices TrueType
-│   ├── 📁 godot-cpp                  # Extension SDL3 pour la gestion audio avancée
-├── 📁 docs                           # Documentation du moteur (pages Markdown, auto-générées ou manuelles)
-├── 📁 game-example-projectgodot      # En-têtes publics exposés aux utilisateurs de la lib (API du moteur)
+│   ├── 📁 godot                      # Repository Github de Godot Engine
+├── 📁 docs                           # Documentation du moteur/projet (pages Markdown, auto-générées ou manuelles)
+├── 📁 game-example-projectgodot      # Projet de jeu Godot comme exemple 
 ├── 📄 .gitignore                     # Fichiers/dossiers à ignorer par Git (ex: /dependencies, builds temporaires)
 ├── 📄 CHANGELOG.md                   # Historique des versions avec les modifications apportées à chaque release
 ├── 📄 dependencies.txt               # Fichier listant les dépendances à cloner (format : nom=repo:version)
 ├── 📄 README.md                      # Page d’accueil du dépôt (description, installation, exemples d’usage)
 ├── 📄 release-please-config.json     # Configuration pour `release-please` (outil Google de génération automatique de releases)
-├── 📄 version.txt                    # Contient la version actuelle du moteur (utilisé dans le build ou les releases)
+├── 📄 version.txt                    # Contient la version actuelle du projet (utilisé dans le build ou les releases)
 
 ```
 

@@ -5,7 +5,7 @@ cd /d "%~dp0..\..\dependencies\godot" || (
 )
 
 echo ---- BUILD WINDOWS TEMPLATE PROD ----
-scons platform=windows target=template_release profile=..\..\build-scripts\build_profile_template_prod.py
+scons platform=windows target=template_release profile=..\..\build-scripts\build_profile_template_prod.py custom_modules=..\..\modules
 if errorlevel 1 (echo FAILED & exit /b 1)
 
 echo DONE
