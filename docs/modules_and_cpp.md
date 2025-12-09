@@ -390,7 +390,7 @@ Après compilation :
 
 ---
 
-### 7. POO et limitations quand une classe est exposée à Godot
+### 6. POO et limitations quand une classe est exposée à Godot
 
 Exposer une classe à Godot avec :
 
@@ -441,7 +441,7 @@ public:
 
 ---
 
-## 8. Résumé
+## 7. Résumé
 
 - **Sans `GDCLASS` + `ClassDB::register_class` :**
   - votre classe est **invisible** pour Godot (GDScript, inspecteur, scènes) ;
@@ -457,8 +457,3 @@ public:
 - **Pour des systèmes de gameplay propres et performants :**
   - exposez uniquement des **Nodes / Resources “façades”** ;
   - implémentez toute la logique métier en **C++ pur non exposé**.
-
-Ce modèle vous donne le meilleur des deux mondes :
-- intégration complète dans Godot,
-- POO C++ propre et sans contraintes,
-- performances maximales.
