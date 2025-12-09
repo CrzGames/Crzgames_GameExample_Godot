@@ -197,12 +197,6 @@ Lancer les test unitaires :
 <br /><br /><br /><br />
 
 
-## 🔄 Module C++
-
-
-<br /><br /><br /><br />
-
-
 ## 🔄 Cycle Development
 1. (Optionnel) Rebuilder l'editeur Godot Engine à chaque modifications fait côté C++ si utilisation de modules ou extensions GDExtension :
 ```bash
