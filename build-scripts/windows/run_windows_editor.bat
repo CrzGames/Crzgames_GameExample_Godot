@@ -29,7 +29,7 @@ echo -------------------------
   --debug ^
   --gpu-validation ^
   --gpu-abort ^
-  --profiling
+  --gpu-profile
 REM --generate-spirv-debug-info (désactivé pour bug SPIR-V)
 
 endlocal
