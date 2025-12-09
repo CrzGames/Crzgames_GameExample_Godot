@@ -9,6 +9,50 @@ Ce document explique comment :
 
 ---
 
+## 0. Structure minimale d’un module C++ Godot
+
+Un module C++ “pur” pour Godot suit toujours la même logique.  
+Dans un dossier `mymodule/`, on retrouve au minimum :
+
+```text
+mymodule/
+  config.py
+  SCsub
+  register_types.h
+  register_types.cpp
+  (vos fichiers .cpp / .h)
+  my_class.h
+  my_class.cpp
+  ...
+```
+
+Rôle de chaque fichier :
+
+- `config.py`  
+  - Dit au système de build **si le module peut être compilé** pour une plateforme donnée (`can_build`) ;
+  - Permet de **configurer l’environnement de build** (`configure`) ;
+  - Peut aussi déclarer la localisation de la doc, des icônes, etc. si besoin.
+
+- `SCsub`  
+  - Fichier SCons spécifique au module ;
+  - Indique **quels fichiers .cpp** doivent être compilés pour ce module ;
+  - C’est ici qu’on peut éventuellement cloner l’environnement, ajouter des flags, etc.
+
+- `register_types.h` / `register_types.cpp`  
+  - Fournissent les fonctions d’initialisation du module :  
+    - `initialize_mymodule_module(ModuleInitializationLevel p_level)`  
+    - `uninitialize_mymodule_module(ModuleInitializationLevel p_level)`  
+  - C’est **ici** que l’on appelle `ClassDB::register_class<T>()` si l’on veut exposer des types (class) au moteur (GDScript / éditeur).
+
+- `*.h` / `*.cpp`  
+  - Vos classes C++ :
+    - soit **pures** (sans `GDCLASS`, non exposées, POO C++ normale) ;
+    - soit **exposées** à Godot (`GDCLASS` + `ClassDB::register_class`).
+
+Ensuite, ce dossier de module doit être **placé à un endroit visible par le build** (voir section suivante).
+
+---
+
 ## 1. Où mettre le module ?
 
 Vous pouvez soit :
