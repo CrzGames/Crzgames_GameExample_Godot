@@ -3,7 +3,7 @@
 Ce document explique comment :
 
 - créer un module C++ pour Godot (exemple : `summator`) ;
-- comprendre **quand il faut `GDCLASS` / `ClassDB::register_class`** ;
+- comprendre **quand il faut `GDCLASS` / `GDREGISTER_*`** ;
 - utiliser des **classes C++ “pures”** pour faire de la vraie POO sans contraintes ;
 - créer des **vrais types visibles dans l’éditeur** (nodes et resources avec propriétés dans l’inspecteur).
 
@@ -41,12 +41,12 @@ Rôle de chaque fichier :
   - Fournissent les fonctions d’initialisation du module :  
     - `initialize_mymodule_module(ModuleInitializationLevel p_level)`  
     - `uninitialize_mymodule_module(ModuleInitializationLevel p_level)`  
-  - C’est **ici** que l’on appelle `ClassDB::register_class<T>()` si l’on veut exposer des types (class) au moteur (GDScript / éditeur).
+  - C’est **ici** que l’on appelle `GDREGISTER_*` si l’on veut exposer des types (class) au moteur (GDScript / éditeur).
 
 - `*.h` / `*.cpp`  
   - Vos classes C++ :
     - soit **pures** (sans `GDCLASS`, non exposées, POO C++ normale) ;
-    - soit **exposées** à Godot (`GDCLASS` + `ClassDB::register_class`).
+    - soit **exposées** à Godot (`GDCLASS` + `GDREGISTER_*`).
 
 Ensuite, ce dossier de module doit être **placé à un endroit visible par le build** (voir section suivante).
 
@@ -70,7 +70,7 @@ godot/              # code sources du moteur (repository github de godot)
       summator.cpp
 ```
 
-- La meilleur méthode pour séparer du code du moteur : utiliser un dossier **externe** et le passer à SCons via `custom_modules`, par ex. :
+- La meilleure méthode pour séparer du code du moteur : utiliser un dossier **externe** et le passer à SCons via `custom_modules`, par ex. :
 
 ```text
 <repo>/              # notre repo
@@ -78,7 +78,12 @@ godot/              # code sources du moteur (repository github de godot)
     godot/           # code sources du moteur (repository github de godot)
   modules/           # notre dossier modules à nous et pas directement le dossier modules du moteur Godot
     summator/
-      ...
+      config.py
+      SCsub
+      register_types.h
+      register_types.cpp
+      summator.h
+      summator.cpp
 ```
 
 Compilation :
@@ -91,139 +96,7 @@ scons platform=windows target=editor custom_modules=..\..\modules
 
 ---
 
-## 2. Exposée ou non nos classes C++ dans Godot
-
-### 2.1. Classe C++ non exposée à Godot
-
-Si vous écrivez une simple classe C++ comme ceci :
-
-```cpp
-class InternalAccumulator {
-    int value = 0;
-
-public:
-    void add(int v) { value += v; }
-    void reset() { value = 0; }
-    int get_total() const { return value; }
-};
-```
-
-- pas de `GDCLASS` ;
-- pas de `ClassDB::register_class` ;
-- pas d’héritage depuis `Object`/`RefCounted`/`Node`..etc
-
-👉 Cette classe est **invisible pour Godot** (GDScript, inspecteur, scènes),  
-mais **totalement utilisable dans votre code C++**, comme dans n’importe quel projet C++ classique.
-
-Vous pouvez l’utiliser à l’intérieur d’autres classes C++ (y compris des Nodes/Class exposés) pour faire autant de POO que vous voulez : héritage multiple, interfaces, patterns, etc.
-
-### 2.2. Classe C++ exposé à Godot
-
-Pour qu’une classe soit **visible dans Godot** (instanciable en GDScript, listée dans le ClassDB, utilisable comme type de propriété), il faut :
-
-1. qu’elle **hérite d’un type Godot** (`Object`, `RefCounted`, `Node`, `Resource`, etc.) ;
-2. qu’elle ait la macro `GDCLASS` à l'intérieur de la class ;
-3. qu'elle bind les methods pour les exposés
-3. qu’elle soit enregistrée avec `ClassDB::register_class<MyClass>()` dans le module.
-
-Exemple :
-
-```cpp
-// summator.h
-#ifndef SUMMATOR_H
-#define SUMMATOR_H
-
-#include "core/object/ref_counted.h"
-
-class Summator : public RefCounted {
-    GDCLASS(Summator, RefCounted);
-
-    int count = 0;
-
-protected:
-    static void _bind_methods();
-
-public:
-    void add(int p_value);
-    void reset();
-    int get_total() const;
-
-    Summator();
-};
-
-#endif // SUMMATOR_H
-```
-
-```cpp
-// summator.cpp
-#include "summator.h"
-#include "core/object/class_db.h"
-
-void Summator::add(int p_value) {
-    count += p_value;
-}
-
-void Summator::reset() {
-    count = 0;
-}
-
-int Summator::get_total() const {
-    return count;
-}
-
-void Summator::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("add", "value"), &Summator::add);
-    ClassDB::bind_method(D_METHOD("reset"), &Summator::reset);
-    ClassDB::bind_method(D_METHOD("get_total"), &Summator::get_total);
-}
-
-Summator::Summator() {
-    count = 0;
-}
-```
-
-Dans `register_types.cpp` :
-
-```cpp
-#include "register_types.h"
-#include "core/object/class_db.h"
-#include "summator.h"
-
-void initialize_summator_module(ModuleInitializationLevel p_level) {
-    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-        return;
-    }
-
-    // Enregistre Summator dans le ClassDB → visible en GDScript
-    ClassDB::register_class<Summator>();
-}
-
-void uninitialize_summator_module(ModuleInitializationLevel p_level) {
-    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-        return;
-    }
-    // Rien à faire ici dans cet exemple.
-}
-```
-
-À partir de là, dans GDScript :
-
-```gdscript
-func _ready():
-    print(ClassDB.class_exists("Summator")) # true
-    var s := Summator.new()
-    s.add(10)
-    s.add(20)
-    print(s.get_total()) # 30
-```
-
-👉 **Conclusion :**  
-- Sans `GDCLASS` + `register_class` → la classe n’existe que côté C++.  
-- Avec `GDCLASS` + `register_class` → la classe devient un vrai type Godot, utilisable depuis GDScript / l’éditeur.
-
----
-
-## 3. `register_types.*` : ce qui est obligatoire et ce qui ne l’est pas
+## 2. `register_types.h / register_type.cpp` : ce qui est obligatoire et ce qui ne l’est pas
 
 Pour que le moteur reconnaisse votre module, vous devez fournir :
 
@@ -253,7 +126,7 @@ void initialize_summator_module(ModuleInitializationLevel p_level) {
 
     // Ici, vous *pouvez* enregistrer des classes, mais ce n’est pas obligatoire.
     // Vous pouvez avoir un module sans classes exposées si vous le souhaitez.
-    // Exemple : ClassDB::register_class<Summator>();
+    // Exemple : GDREGISTER_CLASS(Summator);
 }
 
 void uninitialize_summator_module(ModuleInitializationLevel p_level) {
@@ -263,12 +136,12 @@ void uninitialize_summator_module(ModuleInitializationLevel p_level) {
 }
 ```
 
-Vous **êtes obligé** de fournir ces fonctions pour que le module soit intégré,  
-mais **vous n’êtes pas obligé** d’y appeler `ClassDB::register_class` si vous ne voulez rien exposer à Godot.
+Vous **êtes obligé** de fournir ces deux fonctions pour que le module soit intégré en `nommant correctement` le `nom des deux fonctions` par rapport au `nom du dossier du module`,  
+mais **vous n’êtes pas obligé** d’y appeler `GDREGISTER_CLASS, GDREGISTER_ABSTRACT_CLASS..` si vous ne voulez rien exposer à Godot.
 
 ---
 
-## 4. Fichiers de build : `SCsub` et `config.py`
+## 3. Fichiers de build : `SCsub` et `config.py`
 
 Exemple minimal :
 
@@ -291,175 +164,239 @@ def configure(env):
 
 ---
 
-## 5. Créer un “vrai” type ajoutable dans l’éditeur (Node custom)
+## 4. Les 5 types de classes C++ dans Godot
 
-Pour avoir un **Node** custom que l’on peut :
+| # | Type de classe | Hérite de `Object, Node..etc` ? | Visible dans l’éditeur ? | Instanciable en GDScript ? | Enregistrement ? | Macro |
+|---|---------------|----------------------|--------------------------|----------------------------|-------------------|--------|
+| 1 | **Classe C++ pure (non godot et non exposée)** | ❌ non | ❌ non | ❌ non | ❌ | — |
+| 2 | **Classe interne Godot (non exposée)** | ✔ oui | ❌ non | ❌ non | ✔ | `GDREGISTER_INTERNAL_CLASS` |
+| 3 | **Classe abstraite Godot (exposée)** | ✔ oui | ✔ oui | ❌ non | ✔ | `GDREGISTER_ABSTRACT_CLASS` |
+| 4 | **Classe Godot (exposée)** | ✔ oui | ✔ oui | ✔ oui | ✔ | `GDREGISTER_CLASS` |
+| 5 | **Classe runtime Godot (exposée)** | ✔ oui | ✔ oui | ✔ oui | ✔ | `GDREGISTER_RUNTIME_CLASS` |
 
-- ajouter via le bouton **“+ Add Node”**,
-- voir dans l’arborescence de scène,
-- avec des **propriétés éditables dans l’inspecteur**,
+---
 
-il faut :
+### 4.1 Classe C++ pure (non Godot et non exposée)
 
-1. hériter de `Node` (ou `Node2D`, `CharacterBody2D`, etc.) ;
-2. utiliser la macro `GDCLASS` dans la nouvelle class créer ;
-3. enregistrer la classe via `ClassDB::register_class` ;
-4. binder des propriétés via `_bind_methods` et `ADD_PROPERTY`.
-
-### Exemple : `MySystemNode`
+➡️ Aucun lien avec Godot : pas d'héritage vers `Object, Node..`, pas de `GDCLASS`, pas d’enregistrement.
 
 ```cpp
-// my_system_node.h
-#ifndef MY_SYSTEM_NODE_H
-#define MY_SYSTEM_NODE_H
+// internal_accumulator.h
+#pragma once
 
-#include "scene/main/node.h"
+class InternalAccumulator {
+    int value = 0;
 
-class MySystemNode : public Node {
-    GDCLASS(MySystemNode, Node);
+public:
+    void add(int v) { value += v; }
+    void reset() { value = 0; }
+    int get_total() const { return value; }
+};
+```
 
-    int speed = 10;
+👉 Parfait pour logique interne : math, pathfinding, state machines…
+
+---
+
+### 4.2 Classe interne Godot (non exposée)
+
+➡️ Hérite de `Object, Node..etc` mais **non visible** dans l’éditeur et non utilisable depuis GDScript.
+
+```cpp
+// network_peer_internal.h
+#pragma once
+#include "core/object/object.h"
+
+class NetworkPeerInternal : public Object {
+    GDCLASS(NetworkPeerInternal, Object);
+
+    int id = -1;
 
 protected:
     static void _bind_methods();
 
 public:
-    void set_speed(int p_speed);
-    int get_speed() const;
-
-    void _process(double p_delta) override;
+    void set_id(int p_id) { id = p_id; }
+    int get_id() const { return id; }
 };
-
-#endif // MY_SYSTEM_NODE_H
 ```
 
 ```cpp
-// my_system_node.cpp
-#include "my_system_node.h"
+// network_peer_internal.cpp
+#include "network_peer_internal.h"
 #include "core/object/class_db.h"
-#include "core/io/logger.h"
 
-void MySystemNode::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("set_speed", "speed"), &MySystemNode::set_speed);
-    ClassDB::bind_method(D_METHOD("get_speed"), &MySystemNode::get_speed);
+void NetworkPeerInternal::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("set_id", "id"), &NetworkPeerInternal::set_id);
+    ClassDB::bind_method(D_METHOD("get_id"), &NetworkPeerInternal::get_id);
+}
+```
 
-    // Déclare une propriété visible dans l’inspecteur
+Enregistrement :
+
+```cpp
+GDREGISTER_INTERNAL_CLASS(NetworkPeerInternal);
+```
+
+---
+
+### 4.3 Classe abstraite Godot (exposée)
+
+➡️ Visible dans Godot, mais **non instanciable**.  
+
+```cpp
+// unit_base.h
+#pragma once
+
+#include "scene/2d/node_2d.h"
+
+class UnitBase : public Node2D {
+    GDCLASS(UnitBase, Node2D);
+
+protected:
+    static void _bind_methods();
+    int health = 100;
+
+public:
+    void set_health(int p_h) { health = p_h; }
+    int get_health() const { return health; }
+};
+```
+
+```cpp
+// unit_base.cpp
+#include "unit_base.h"
+#include "core/object/class_db.h"
+
+void UnitBase::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("set_health", "health"), &UnitBase::set_health);
+    ClassDB::bind_method(D_METHOD("get_health"), &UnitBase::get_health);
+
     ADD_PROPERTY(
-        PropertyInfo(Variant::INT, "speed", PROPERTY_HINT_RANGE, "0,100,1"),
-        "set_speed",
-        "get_speed"
+        PropertyInfo(Variant::INT, "health", PROPERTY_HINT_RANGE, "0,999"),
+        "set_health",
+        "get_health"
     );
 }
+```
 
-void MySystemNode::set_speed(int p_speed) {
-    speed = p_speed;
-}
+Enregistrement :
 
-int MySystemNode::get_speed() const {
-    return speed;
-}
+```cpp
+GDREGISTER_ABSTRACT_CLASS(UnitBase);
+```
 
-void MySystemNode::_process(double p_delta) {
-    // Exemple : logique 100% C++ exécutée chaque frame
-    // print_line("MySystemNode running, speed = " + String::num(speed));
+---
+
+### 4.4 Classe Godot (exposée et Node ou Resource visible)
+
+➡️ Visible dans l'éditeur via **Add Node**, instanciable en script via GDScript (`MyClass.new()`).
+
+### Exemple : Resource custom (`UnitStats`)
+
+```cpp
+// unit_stats.h
+#pragma once
+
+#include "core/io/resource.h"
+
+class UnitStats : public Resource {
+    GDCLASS(UnitStats, Resource);
+
+    int max_health = 100;
+    int attack = 10;
+    float move_speed = 100.0;
+
+protected:
+    static void _bind_methods();
+
+public:
+    void set_max_health(int h) { max_health = h; }
+    int get_max_health() const { return max_health; }
+
+    void set_attack(int a) { attack = a; }
+    int get_attack() const { return attack; }
+
+    void set_move_speed(float s) { move_speed = s; }
+    float get_move_speed() const { return move_speed; }
+};
+```
+
+```cpp
+// unit_stats.cpp
+#include "unit_stats.h"
+#include "core/object/class_db.h"
+
+void UnitStats::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("set_max_health", "max_health"), &UnitStats::set_max_health);
+    ClassDB::bind_method(D_METHOD("get_max_health"), &UnitStats::get_max_health);
+
+    ClassDB::bind_method(D_METHOD("set_attack", "attack"), &UnitStats::set_attack);
+    ClassDB::bind_method(D_METHOD("get_attack"), &UnitStats::get_attack);
+
+    ClassDB::bind_method(D_METHOD("set_move_speed", "move_speed"), &UnitStats::set_move_speed);
+    ClassDB::bind_method(D_METHOD("get_move_speed"), &UnitStats::get_move_speed);
+
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "max_health"), "set_max_health", "get_max_health");
+    ADD_PROPERTY(PropertyInfo(Variant::INT, "attack"), "set_attack", "get_attack");
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "move_speed"), "set_move_speed", "get_move_speed");
 }
 ```
 
-Dans `register_types.cpp` du module :
+Enregistrement :
 
 ```cpp
+GDREGISTER_CLASS(UnitStats);
+```
+
+---
+
+### 4.5 Classe runtime Godot (exposée)
+
+Cas avancé, rarement utile au début.
+
+```cpp
+class DynamicRuntimeType : public Object {
+    GDCLASS(DynamicRuntimeType, Object);
+
+    int runtime_id = 0;
+
+protected:
+    static void _bind_methods();
+};
+```
+
+Enregistrement :
+
+```cpp
+GDREGISTER_RUNTIME_CLASS(DynamicRuntimeType);
+```
+
+---
+
+### 4.6 Fichier complet pour : `register_types.cpp`
+
+```cpp
+// register_types.cpp
 #include "register_types.h"
+
 #include "core/object/class_db.h"
-#include "my_system_node.h"
+
+#include "network_peer_internal.h"
+#include "unit_base.h"
+#include "unit_stats.h"
+#include "dynamic_runtime_type.h"
 
 void initialize_mymodule_module(ModuleInitializationLevel p_level) {
-    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-        return;
-    }
+    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) return;
 
-    ClassDB::register_class<MySystemNode>();
+    GDREGISTER_INTERNAL_CLASS(NetworkPeerInternal);
+    GDREGISTER_ABSTRACT_CLASS(UnitBase);
+    GDREGISTER_CLASS(UnitStats);
+    GDREGISTER_RUNTIME_CLASS(DynamicRuntimeType);
 }
 
 void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
-    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-        return;
-    }
+    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) return;
 }
 ```
-
-Après compilation :
-
-- Dans l’éditeur, bouton **“+ Add Node”**, cherchez `MySystemNode` → il apparaît.
-- Quand vous le sélectionnez dans la scène, l’inspecteur affiche la propriété **`speed`**, éditable.
-
-👉 C’est comme ça que vous ajoutez **de vrais types custom** au moteur, utilisables comme n’importe quel Node natif.
-
----
-
-### 6. POO et limitations quand une classe est exposée à Godot
-
-Exposer une classe à Godot avec :
-
-- un héritage depuis `Object` / `RefCounted` / `Node` / `Resource`, etc. ;
-- la macro `GDCLASS(MyClass, BaseClass)` ;
-- et `ClassDB::register_class<MyClass>()`
-
-**ne veut pas dire qu’on ne peut plus faire de POO**.  
-En revanche, cela impose quelques **contraintes importantes** :
-
-- La classe doit faire partie d’une **chaîne d’héritage unique** basée sur les types Godot  
-  (par exemple : `MyEnemy : public CharacterBody2D`, ou `MyData : public Resource`).
-- On ne peut pas faire d’**héritage multiple** avec d’autres bases C++ arbitraires en même temps que la base Godot  
-  (par ex. `class MyEnemy : public CharacterBody2D, public SomeCppBase` → à éviter).
-- Tout ce qui ne rentre pas dans cette hiérarchie doit passer par :
-  - de la **composition** (membres C++ “purs”) ;
-  - ou des **classes C++ non exposées** (sans `GDCLASS`, non enregistrées).
-
-En pratique, le pattern recommandé est :
-
-- utiliser une classe exposée (Node / Resource) comme **“façade”** visible dans Godot ;
-- mettre toute la logique complexe, les patterns, l’héritage multiple, etc. dans des **classes C++ “pures”** internes, non exposées.
-
-Exemple :
-
-```cpp
-// Classe interne, POO C++ classique (non exposée)
-class InternalAIStateMachine {
-public:
-    void update(double delta);
-};
-
-// Classe exposée à Godot (Node visible dans l’éditeur)
-class EnemyController : public Node2D {
-    GDCLASS(EnemyController, Node2D);
-
-    InternalAIStateMachine ai; // composition
-
-protected:
-    static void _bind_methods();
-
-public:
-    void _process(double delta) override {
-        ai.update(delta);
-    }
-};
-```
-
----
-
-## 7. Résumé
-
-- **Sans `GDCLASS` + `ClassDB::register_class` :**
-  - votre classe est **invisible** pour Godot (GDScript, inspecteur, scènes) ;
-  - mais vous pouvez l’utiliser librement dans votre module C++ ;
-  - vous faites de la POO C++ classique (héritage multiple, patterns, etc.).
-
-- **Avec `GDCLASS` + `ClassDB::register_class` :**
-  - la classe devient un **vrai type Godot** ;
-  - vous pouvez l’instancier depuis GDScript (`MyType.new()`) ;
-  - vous pouvez en faire un Node ou un Resource apparaissant dans l’éditeur ;
-  - vous pouvez lui ajouter des propriétés éditables dans l’inspecteur via `ADD_PROPERTY`.
-
-- **Pour des systèmes de gameplay propres et performants :**
-  - exposez uniquement des **Nodes / Resources “façades”** ;
-  - implémentez toute la logique métier en **C++ pur non exposé**.
