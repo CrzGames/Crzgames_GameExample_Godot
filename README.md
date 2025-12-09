@@ -198,17 +198,7 @@ Lancer les test unitaires :
 
 
 ## 🔄 Module C++
-Informations important : Pour les test unitaires cela marche seulements pour les modules C++, pas pour les extensions. <br />
-Il faut créer un dossier appeler "tests" dans le dossier du module, par exemple : modules/mymodule/tests/. <br />
-TOUT les fichiers include (.h) doit être préfixé par "test_", par exemple : test_summator.h <br /><br />
 
-Lancer les test unitaires :
-```bash
-# Structure (exemple), préfixé le nom des .h par le nom du module donc test_summator_quelqueschoses
-# 1er fichier de test : "modules/summator/tests/test_summator_toto1.h
-# 2er fichier de test : "modules/summator/tests/test_summator_toto2.h
-./path/to/<godot_binary_editor> --test --source-file="*test_summator*" --success
-```
 
 <br /><br /><br /><br />
 
