@@ -5,7 +5,7 @@ REM Détermine le chemin ABSOLU du dossier racine du repo
 set ROOT_DIR=%~dp0..\..
 
 REM Détermine le chemin ABSOLU du projet Godot
-set PROJECT_DIR=%ROOT_DIR%\game-example
+set PROJECT_DIR=%ROOT_DIR%\game-example-projectgodot
 
 REM Vérifier si project.godot existe vraiment
 if not exist "%PROJECT_DIR%\project.godot" (
@@ -15,7 +15,7 @@ if not exist "%PROJECT_DIR%\project.godot" (
 )
 
 REM Chemin du binaire de l'editeur Godot custom build
-set GODOT_BIN=%ROOT_DIR%\dependencies\godot\bin\godot.windows.editor.prod.x86_64.prod.exe
+set GODOT_BIN=%ROOT_DIR%\dependencies\godot\bin\godot.windows.editor.dev.x86_64.dev.exe
 
 echo Running editor:
 echo   GODOT = %GODOT_BIN%
@@ -25,9 +25,14 @@ echo -------------------------
 "%GODOT_BIN%" ^
   --path "%PROJECT_DIR%" ^
   --editor ^
-  --print-fps ^
+  --verbose ^
+  --debug ^
+  --gpu-validation ^
+  --gpu-abort ^
   --gpu-profile ^
+  --print-fps ^
   --profiling
+REM --generate-spirv-debug-info (désactivé pour bug SPIR-V)
 
 endlocal
 exit /b 0

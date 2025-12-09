@@ -1,15 +1,19 @@
+# Pour une liste complète des options de build pour désactiver/activer des fonctionnalités, 
+# faire : scons --help, à la racine du dépôt Godot (dependencies/godot).
+
+
 # -------------------------------------------------------------------
 # --------------- FLAGS GÉNÉRAUX MOTEUR / FEATURES -------------------
 # -------------------------------------------------------------------
 
 disable_exceptions = "yes"          # default: True
-disable_3d = "no"                   # default: False
-disable_advanced_gui = "no"         # default: False
-disable_physics_2d = "no"           # default: False
-disable_physics_3d = "no"           # default: False
-disable_navigation_2d = "no"        # default: False
-disable_navigation_3d = "no"        # default: False
-disable_xr = "no"                   # default: False
+disable_3d = "yes"                   # default: False
+disable_advanced_gui = "yes"         # default: False
+disable_physics_2d = "yes"           # default: False
+disable_physics_3d = "yes"           # default: False
+disable_navigation_2d = "yes"        # default: False
+disable_navigation_3d = "yes"        # default: False
+disable_xr = "yes"                   # default: False
 
 # -------------------------------------------------------------------
 # --------------- BIBLIOTHÈQUES BUILTIN ------------------------------
@@ -45,7 +49,6 @@ builtin_rvo2_3d = "yes"
 builtin_xatlas = "yes"
 builtin_zlib = "yes"
 builtin_zstd = "yes"
-
 
 # -------------------------------------------------------------------
 # --------------- MODULES GODOT (ENABLE/DISABLE) ---------------------

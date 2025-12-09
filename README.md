@@ -1,7 +1,7 @@
 # Crzgames - Template Project Godot
 
 ## 🛠 Tech Stack
-- C++ / GDScript (Language) (Infos : Godot utilise C++ 17, mais on peux utilisé la version qu'ont souhaite pour nos propre module et extension GDExtension)
+- C++ / GDScript (Language) (Infos : Godot utilise un sous-ensembles de C++ 17, mais on peux utilisé la version qu'ont souhaite pour nos propre modules et extensions GDExtension)
 - CI / CD (Github Actions)
 - CMake / SCons (Build script)
 - Compiler (GCC, CL, Clang, NDK)
@@ -45,8 +45,8 @@
 | **iOS/iPadOS** | arm64 (iphoneos) - not iphonesimulator | iOS/iPadOS 18.0+ | ✓ |
 | **Android** | arm64-v8a / armeabi-v7a | Android 9.0+ | ✓ |
 | **Linux** | x64 / arm64 | glibc 2.35+ | ✓ |
-| **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
-| **Steam Deck** | x64 | Steam Linux Runtime 3.0 (Sniper) | ✓ |
+| **Steam Linux** | x64 / arm64 | Steam Linux Runtime 3.0 (Sniper) |  |
+| **Steam Deck** | x64 | Steam Linux Runtime 3.0 (Sniper) |  |
 | **Xbox** | x64 | Xbox Série X/S+ |  |
 | **Nintendo Switch** | arm64 | Nintendo Switch 1+ |  |
 | **Playstation** | x64 | Playstation 5+ |  |
@@ -110,13 +110,9 @@
   2. Download and Install Visual Studio == 2022 (MSVC >= v143 + Windows SDK >= 10) : https://visualstudio.microsoft.com/fr/downloads/
   3. Download and Install CMake >= 3.25 : https://cmake.org/download/ and add PATH ENVIRONMENT.
   4. Download and Install Python >= 3.8 : https://www.python.org/downloads/ and add PATH ENVIRONMENT.
-  5. Download and Install SCons >= 0.4.0, ouvrir le powershell (pas en administrateur) puis : <br />
-     Set-ExecutionPolicy RemoteSigned -Scope CurrentUser <br /> (choisir la touche "O" (oui))
-     irm get.scoop.sh | iex (pour installer faire la touche ENTER, permet dinstaller)
-  6. Installer : <br />
-     python -m pip install scons
-  7. Installer le SDK Vulkan pour la couche de validation (debug shaders..etc) : https://vulkan.lunarg.com/sdk/home
-
+  5. Download and Install SCons >= 4.0.0, via Python : <br />
+     python -m pip install scons (puis ajouté le binaire scons dans le PATH ENVIRONMENT)
+  6. Installer le SDK Vulkan pour la couche de validation (debug shaders..etc) : https://vulkan.lunarg.com/sdk/home
 
 
   # Linux :
