@@ -6,7 +6,7 @@ cd /d "%~dp0..\..\dependencies\godot" || (
     exit /b 1
 )
 
-echo ---- BUILD WINDOWS - MODE EDITOR - PROFILE DEV ----
+echo ---- BUILD WINDOWS - MODE EDITOR ----
 scons platform=windows target=editor vsproj=yes vsproj_gen_only=no profile=..\..\build-scripts\build_profile_editor.py custom_modules=..\..\modules
 echo SCONS ERRORLEVEL: %ERRORLEVEL%
 if errorlevel 1 (

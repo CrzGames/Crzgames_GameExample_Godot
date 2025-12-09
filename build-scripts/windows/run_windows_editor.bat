@@ -29,8 +29,6 @@ echo -------------------------
   --debug ^
   --gpu-validation ^
   --gpu-abort ^
-  --gpu-profile ^
-  --print-fps ^
   --profiling
 REM --generate-spirv-debug-info (désactivé pour bug SPIR-V)
 
