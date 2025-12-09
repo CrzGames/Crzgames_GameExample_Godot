@@ -71,7 +71,7 @@ godot/              # code sources du moteur
       summator.cpp
 ```
 
-- ou utiliser un dossier **externe** et le passer à SCons via `custom_modules`, par ex. :
+- La meilleur méthode pour séparer du code du moteur : utiliser un dossier **externe** et le passer à SCons via `custom_modules`, par ex. :
 
 ```text
 <repo>/              # notre repo
