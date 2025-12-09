@@ -16,7 +16,7 @@ Vous pouvez soit :
 - mettre votre module **dans le dossier `modules/` du moteur Godot**, par ex. :
 
 ```text
-godot/              # sources du moteur
+godot/              # code sources du moteur
   modules/
     summator/
       config.py
@@ -32,7 +32,7 @@ godot/              # sources du moteur
 ```text
 <repo>/              # notre repo
   dependencies/
-    godot/           # sources du moteur
+    godot/           # code sources du moteur
   modules/
     summator/
       ...
