@@ -86,7 +86,7 @@ Compilation :
 ```bash
 # Exemple simple sous Windows
 cd dependencies/godot
-scons platform=windows target=editor custom_modules=../modules
+scons platform=windows target=editor custom_modules=..\..\modules
 ```
 
 ---
