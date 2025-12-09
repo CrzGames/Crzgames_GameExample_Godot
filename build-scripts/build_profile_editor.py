@@ -1,4 +1,4 @@
-# --------------- Editor - Build mode DEV ---------------
+# --------------- Editor - Build ---------------
 dev_build = "yes"
 dev_mode = "yes"
 optimize = "debug"

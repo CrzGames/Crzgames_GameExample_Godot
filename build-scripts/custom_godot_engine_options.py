@@ -7,13 +7,13 @@
 # -------------------------------------------------------------------
 
 disable_exceptions = "yes"          # default: True
-disable_3d = "yes"                   # default: False
-disable_advanced_gui = "yes"         # default: False
-disable_physics_2d = "yes"           # default: False
-disable_physics_3d = "yes"           # default: False
-disable_navigation_2d = "yes"        # default: False
-disable_navigation_3d = "yes"        # default: False
-disable_xr = "yes"                   # default: False
+disable_3d = "no"                   # default: False
+disable_advanced_gui = "no"         # default: False
+disable_physics_2d = "no"           # default: False
+disable_physics_3d = "no"           # default: False
+disable_navigation_2d = "no"        # default: False
+disable_navigation_3d = "no"        # default: False
+disable_xr = "no"                   # default: False
 
 # -------------------------------------------------------------------
 # --------------- BIBLIOTHÈQUES BUILTIN ------------------------------
