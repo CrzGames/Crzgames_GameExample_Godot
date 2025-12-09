@@ -48,9 +48,9 @@ scons platform=windows target=editor custom_modules=../modules
 
 ---
 
-## 2. GDCLASS, ClassDB, et visibilité dans Godot
+## 2. Exposée ou non nos classes C++ dans Godot
 
-### 2.1. Classe C++ “pure” non exposée
+### 2.1. Classe C++ “pure” non exposée à Godot
 
 Si vous écrivez une simple classe C++ comme ceci :
 
@@ -74,7 +74,7 @@ mais **totalement utilisable dans votre code C++**, comme dans n’importe quel 
 
 Vous pouvez l’utiliser à l’intérieur d’autres classes C++ (y compris des Nodes exposés) pour faire autant de POO que vous voulez : héritage multiple, interfaces, patterns, etc.
 
-### 2.2. Avec `GDCLASS` + `ClassDB::register_class` : exposer un type à Godot
+### 2.2. Classe C++ exposé à Godot
 
 Pour qu’une classe soit **visible dans Godot** (instanciable en GDScript, listée dans le ClassDB, utilisable comme type de propriété), il faut :
 
