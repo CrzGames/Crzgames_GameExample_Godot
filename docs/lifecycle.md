@@ -188,6 +188,8 @@ func _exit_tree():
     print("Exit tree")
 ```
 
+---
+
 # 🔵 5. Exemple complet en C++ (Module / GDExtension)
 
 ### Header : `my_node.h`
