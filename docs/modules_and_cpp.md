@@ -405,7 +405,7 @@ void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
 
 ---
 
-## 5. _bind_methods() : les 4 choses que tu peux exposer à Godot
+## 5. _bind_methods() : les 5 choses que tu peux exposer à Godot
 
 Documentation officiel pour plus de détaille : https://docs.godotengine.org/fr/4.5/engine_details/architecture/object_class.html
 
