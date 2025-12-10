@@ -222,6 +222,12 @@ void Parent::_enter_tree() {
 
 ## ✔ Solution recommandée : utiliser `_ready()`
 
+### GDScript
+```gdscript
+func _ready():
+    $Child.do_something() # ✔ Sûr : l’enfant est prêt
+```
+
 ### C++
 ```cpp
 void Parent::_ready() {
@@ -236,18 +242,9 @@ void Parent::_ready() {
 
 | Callback              | Ordre               | Garantie                                   |
 |----------------------|----------------------|---------------------------------------------|
-| `_enter_tree()`      | Parent → Enfants     | Enfants existent mais ne sont pas "ready"   |
-| `_ready()`           | Enfants → Parent     | Tous les children sont prêts                 |
+| `_enter_tree()`      | Parent → Enfants     | Le parent entre dans l'arbre de scène avant les children |
+| `_ready()`           | Enfants → Parent     | Tous les children sont prêts avant le parent |
 | `_exit_tree()`       | Enfants → Parent     | Inverse de `_enter_tree()`                   |
-
----
-
-## 🎯 À retenir absolument
-
-> **Ne fais jamais d’opérations de scène dans `_enter_tree()` qui supposent que les enfants sont prêts.  
-Utilise `_ready()` pour toute logique dépendante de la hiérarchie.**
-
-C’est l’une des règles les plus importantes du moteur Godot.
 
 ---
 
