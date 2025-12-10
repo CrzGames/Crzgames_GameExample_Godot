@@ -8,7 +8,7 @@ Ce document explique **toutes les méthodes du cycle de vie d’un Node**, leur 
 
 Quand un Node est instancié et ajouté à la scène, Godot appelle les callbacks suivants :
 
-1. **_init()** (GDScript) / constructeur C++  
+1. **_init()** (GDScript) / en C++ l'équivalent c'est le constructeur de la classe
 2. **_enter_tree()**  
 3. **_ready()**  
 4. **_process( delta )**
