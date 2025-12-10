@@ -158,7 +158,108 @@ Exemple : un `Button` avec un raccourci clavier.
 
 ---
 
-# 🔵 4. Exemple complet (GDScript)
+# ⚠️ 4. Ordre Parent / Enfants dans Godot (TRÈS IMPORTANT)
+
+Godot **n’appelle pas** `_enter_tree()` et `_ready()` dans le même ordre.
+
+C’est un piège très courant.
+
+---
+
+# 🔷 Ordre réel pour `_enter_tree()`
+
+Lorsqu’un node entre dans l’arbre, l'ordre d’appel est :
+
+```
+_parent._enter_tree()
+    -> child1._enter_tree()
+    -> child2._enter_tree()
+    -> child3._enter_tree()
+```
+
+➡️ **Du parent vers ses enfants.**
+
+### ✔ Ce qu’il faut comprendre
+- Dans `_enter_tree()` d’un parent → **les enfants ne sont PAS encore "inside tree"**.
+- Certains comportements des enfants **ne fonctionnent pas encore**.
+- Tu ne dois pas supposer que les enfants sont prêts.
+
+---
+
+# 🔶 Ordre réel pour `_ready()`
+
+Une fois que tous les nodes sont dans l’arbre :
+
+```
+child1._ready()
+child2._ready()
+child3._ready()
+_parent._ready()
+```
+
+➡️ **Les enfants font `_ready()` AVANT le parent.**
+
+### ✔ Ce qu’il faut comprendre
+- Dans `_ready()` d’un parent → **tous les enfants sont garantis prêts**.
+- C’est l’endroit idéal pour :
+  - accéder à `$Child`
+  - lancer des animations, timers, tweens
+  - initialiser la logique qui dépend des enfants
+
+---
+
+# ❗ Ce que cela implique dans la pratique
+
+## ⚠️ Erreur fréquente — Dans le parent
+
+### GDScript
+```gdscript
+func _enter_tree():
+    $Child.do_something() # ❌ L’enfant n’est peut-être pas encore dans l’arbre !
+```
+
+### C++
+```cpp
+void Parent::_enter_tree() {
+    auto child = get_node("Child"); // ⚠️ L'enfant existe, mais n'est pas "ready"
+    // child->_ready() n’a PAS encore été appelé
+}
+```
+
+---
+
+## ✔ Solution recommandée : utiliser `_ready()`
+
+### C++
+```cpp
+void Parent::_ready() {
+    auto child = get_node("Child");
+    child->do_something(); // ✔ Sûr : l’enfant est prêt
+}
+```
+
+---
+
+# 📘 Résumé des règles essentielles
+
+| Callback              | Ordre               | Garantie                                   |
+|----------------------|----------------------|---------------------------------------------|
+| `_enter_tree()`      | Parent → Enfants     | Enfants existent mais ne sont pas "ready"   |
+| `_ready()`           | Enfants → Parent     | Tous les children sont prêts                 |
+| `_exit_tree()`       | Enfants → Parent     | Inverse de `_enter_tree()`                   |
+
+---
+
+# 🎯 À retenir absolument
+
+> **Ne fais jamais d’opérations de scène dans `_enter_tree()` qui supposent que les enfants sont prêts.  
+Utilise `_ready()` pour toute logique dépendante de la hiérarchie.**
+
+C’est l’une des règles les plus importantes du moteur Godot.
+
+---
+
+# 🔵 5. Exemple complet (GDScript)
 
 ```gdscript
 extends Node
