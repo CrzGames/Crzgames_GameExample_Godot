@@ -271,8 +271,14 @@ func _physics_process(delta):
 func _input(event):
     print("Input event")
 
+func _shortcut_input(event):
+    print("")
+
 func _unhandled_input(event):
     print("Unhandled input")
+
+func _unhandled_key_input(event):
+    print("")
 
 func _exit_tree():
     print("Exit tree")
@@ -304,6 +310,7 @@ public:
     void _process(double p_delta) override;
     void _physics_process(double p_delta) override;
     void _input(const Ref<InputEvent> &p_event) override;
+    void _shortcut_input(const Ref<InputEvent> &p_event) override;
     void _unhandled_input(const Ref<InputEvent> &p_event) override;
     void _unhandled_key_input(const Ref<InputEvent> &p_event) override;
     void _exit_tree() override;
@@ -354,6 +361,10 @@ void MyNode::_physics_process(double p_delta) {
 
 void MyNode::_input(const Ref<InputEvent> &p_event) {
     // print_line("MyNode::_input()");
+}
+
+void MyNode::_shortcut_input(const Ref<InputEvent> &p_event) {
+    // print_line("MyNode::_shortcut_input()");
 }
 
 void MyNode::_unhandled_input(const Ref<InputEvent> &p_event) {
