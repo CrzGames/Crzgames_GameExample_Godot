@@ -6,7 +6,7 @@ Ce document explique **toutes les méthodes du cycle de vie d’un Node**, leur 
 
 # 🔵 1. Vue d’ensemble — Ordre réel d’appel
 
-Quand un Node est instancié et ajouté à la scène, Godot appelle les callbacks suivants :
+Quand un Node est instancié et ajouté à l'arbre de scène, Godot appelle les callbacks suivants :
 
 1. **_init()** (GDScript) / en C++ l'équivalent c'est le constructeur de la classe
 2. **_enter_tree()**  
