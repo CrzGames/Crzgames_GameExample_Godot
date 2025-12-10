@@ -512,13 +512,13 @@ void Unit::_bind_methods() {
 
     ADD_SIGNAL(MethodInfo("unit_died"));
 
-    // 4) ENUM : BIND_CONSTANT → accessibles en script
+    // 4) ENUM : BIND_ENUM_CONSTANT → accessibles en script
     BIND_ENUM_CONSTANT(UNIT_INFANTRY);
     BIND_ENUM_CONSTANT(UNIT_TANK);
     BIND_ENUM_CONSTANT(UNIT_AIRCRAFT);
 
     // 5) CONSTANTE :
-    BIND_CONSTANT(MAX_UNITS)
+    BIND_CONSTANT(MAX_UNITS);
 }
 
 // ---- Implémentation simple des méthodes ----
