@@ -4,6 +4,8 @@ Ce document explique **toutes les méthodes du cycle de vie d’un Node**, leur 
 
 ---
 
+<br /><br />
+
 # 🔵 1. Vue d’ensemble — Ordre réel d’appel
 
 Quand un Node est instancié et ajouté à la scène, Godot appelle les callbacks suivants :
@@ -21,9 +23,13 @@ Quand un Node est instancié et ajouté à la scène, Godot appelle les callback
 
 ---
 
+<br /><br />
+
 # 🔵 2. Description détaillée de chaque méthode
 
 ---
+
+<br /><br />
 
 ## 2.1 `_init()`  
 📌 **Appelé lors de l’instanciation de l’objet.**  
