@@ -160,7 +160,7 @@ Exemple : un `Button` avec un raccourci clavier.
 
 # ⚠️ 4. Ordre Parent / Enfants dans Godot (TRÈS IMPORTANT)
 
-Godot **n’appelle pas** `_enter_tree()` et `_ready()` dans le même ordre.
+Godot **n’appelle pas** `_enter_tree()`, `_exit_tree` et `_ready()` dans le même ordre.
 
 C’est un piège très courant.
 
@@ -180,7 +180,8 @@ _parent._enter_tree()
 ➡️ **Du parent vers ses enfants.**
 
 ### ✔ Ce qu’il faut comprendre
-- Dans `_enter_tree()` d’un parent → **les enfants ne sont PAS encore "inside tree"**.
+- Dans `_enter_tree()` d’un parent → **les enfants ne sont PAS encore "inside tree" (à l'intérieur de l'arbre
+de scène)**.
 - Certains comportements des enfants **ne fonctionnent pas encore**.
 - Tu ne dois pas supposer que les enfants sont prêts.
 
@@ -221,8 +222,7 @@ func _enter_tree():
 ### C++
 ```cpp
 void Parent::_enter_tree() {
-    auto child = get_node("Child"); // ⚠️ L'enfant existe, mais n'est pas "ready"
-    // child->_ready() n’a PAS encore été appelé
+    auto child = get_node("Child"); # ❌ L’enfant n’est peut-être pas encore dans l’arbre !
 }
 ```
 
