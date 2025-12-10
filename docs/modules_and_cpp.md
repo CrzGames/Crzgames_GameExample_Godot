@@ -407,6 +407,8 @@ void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
 
 ## 5. _bind_methods() : les 4 choses que tu peux exposer à Godot
 
+Documentation officiel pour plus de détaille : https://docs.godotengine.org/fr/4.5/engine_details/architecture/object_class.html
+
 **_bind_methods()** est la fonction centrale qui construit le pont C++ → Godot.
 
 ### 5.1 Ce qu’on peut y déclarer
@@ -415,7 +417,8 @@ void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
 | Méthodes | ClassDB::bind_method() | Appeler une méthode C++ d'une classe depuis GDScript |
 | Propriétés | ADD_PROPERTY() | Voir/éditer un champ dans l’inspecteur de l'editeur Godot |
 | Signaux | ADD_SIGNAL() | Définir des signaux que la classe peut émettre vers GDScript |
-| Enums | BIND_ENUM_CONSTANT() | Exposer des constantes utilisables depuis GDScript |
+| Enums | BIND_ENUM_CONSTANT() + VARIANT_ENUM_CAST() | Exposer des enums utilisables depuis GDScript |
+| Constante | BIND_CONSTANT() | Exposer des constantes utilisables depuis GDScript |
 
 ### 5.2 Exemple complet : classe Unit côté C++
 
@@ -440,6 +443,7 @@ private:
     float speed = 100.0f;
     int health = 100;
     UnitType type = UNIT_INFANTRY;
+    static const int MAX_UNITS = 32;
 
 protected:
     static void _bind_methods();
@@ -465,6 +469,9 @@ public:
 // unit.cpp
 #include "unit.h"
 #include "core/object/class_db.h"
+
+// Enum : Obligatoire en + de -> BIND_ENUM_CONSTANT dans _bind_methods
+VARIANT_ENUM_CAST(Unit::UnitType);
 
 void Unit::_bind_methods() {
     // 1) MÉTHODES : bind_method → appelables depuis GDScript
@@ -505,10 +512,13 @@ void Unit::_bind_methods() {
 
     ADD_SIGNAL(MethodInfo("unit_died"));
 
-    // 4) ENUM / CONSTANTES : BIND_ENUM_CONSTANT → accessibles en script
+    // 4) ENUM : BIND_CONSTANT → accessibles en script
     BIND_ENUM_CONSTANT(UNIT_INFANTRY);
     BIND_ENUM_CONSTANT(UNIT_TANK);
     BIND_ENUM_CONSTANT(UNIT_AIRCRAFT);
+
+    // 5) CONSTANTE :
+    BIND_CONSTANT(MAX_UNITS)
 }
 
 // ---- Implémentation simple des méthodes ----
