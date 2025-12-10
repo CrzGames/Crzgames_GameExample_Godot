@@ -3,9 +3,11 @@
 Godot 4.x inclut un système de **tests unitaires natifs** basé sur la librairie original en C++ : **doctest**.  
 ⚠️ **Les tests unitaires ne fonctionnent que pour les modules C++**, et **pas** pour les extensions GDExtension.
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 ## 📁 Structure obligatoire pour les tests
 
@@ -35,9 +37,11 @@ modules/
       test_summator_advanced.h
 ```
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 ## ❗ Règles de nommage importantes
 
@@ -55,9 +59,11 @@ test_summator_math.h
 test_summator_edge_cases.h
 ```
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 ## ✨ Exemple minimal de fichier de test
 
@@ -82,9 +88,11 @@ TEST_CASE("[Summator] Comportement du reset") {
 }
 ```
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 ## ▶️ Lancer les tests unitaires
 
@@ -102,9 +110,11 @@ Après compilation du moteur (avec votre module), lancez les tests avec :
 | `--source-file="pattern"` | filtre les fichiers de tests à exécuter |
 | `--success` | affiche également les tests réussis |
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 ## ⭐ Résumé
 
