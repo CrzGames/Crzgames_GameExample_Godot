@@ -4,6 +4,8 @@ Ce document explique **toutes les méthodes du cycle de vie d’un Node**, leur 
 
 ---
 
+<br /><br />
+
 # 🔵 1. Vue d’ensemble — Ordre réel d’appel
 
 Quand un Node est instancié et ajouté à l'arbre de scène, Godot appelle les callbacks suivants :
@@ -20,6 +22,8 @@ Quand un Node est instancié et ajouté à l'arbre de scène, Godot appelle les 
 10. **_exit_tree()**
 
 ---
+
+<br /><br />
 
 # 🔵 2. Description détaillée de chaque méthode
 
@@ -139,22 +143,26 @@ Exemple : un `Button` avec un raccourci clavier.
 
 ---
 
-# 🔵 3. Résumé ultra-compact
+<br /><br />
 
-| Méthode | Quand ? | Pour quoi faire ? |
-|--------|---------|-------------------|
-| `_init()` | Instanciation | Initialisation interne |
-| `_enter_tree()` | Le Node entre dans la scène | Connexions, accès au parent |
-| `_ready()` | Tout est prêt | Setup gameplay, accès aux enfants |
-| `_process()` | Chaque frame | Logique non-physique |
-| `_physics_process()` | 60 FPS | Physique |
-| `_input()` | Tout input brut | Interaction immédiate |
-| `_shortcut_input()` | Input lié à un raccourci | Gestion raccourcis |
-| `_unhandled_input()` | Input ignoré par l'UI | Gameplay |
-| `_unhandled_key_input()` | Clavier non-handled | Hotkeys |
-| `_exit_tree()` | Sortie scène | Cleanup |
+# 🔵 3. Résumé
+
+| Méthode                  | Quand ?                                               | À quoi ça sert VRAIMENT ?                                                                 |
+|--------------------------|-------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `_init()`                | À l’instanciation de l’objet                         | Initialisation interne pure (variables, structures), sans accès à la scène               |
+| `_enter_tree()`          | Quand le node est branché dans l’arbre               | Setup qui dépend du parent / du `SceneTree`, mais **pas** des enfants encore “ready”     |
+| `_ready()`               | Quand le node et tous ses enfants sont prêts         | Initialisation gameplay, accès garanti à tous les children, lancement timers / tweens    |
+| `_process(delta)`        | Chaque frame (idle)                                  | Logique non-physique liée au rendu : animations, UI, effets, etc.                        |
+| `_physics_process(delta)`| À chaque tick physique fixe (60 fps par défaut)      | Mouvement, collisions, forces : tout ce qui doit être déterministe                       |
+| `_input(event)`          | **Pour chaque input brut**, au tout début            | Lire / “voler” TOUS les events (clavier, souris, pad). À garder pour cas spéciaux (remap, debug), pas pour le gameplay normal |
+| `_shortcut_input(event)` | Après `_input`, avant les unhandled                  | Raccourcis clavier / manette (Ctrl+S, Start pour Pause, etc.). Ne reçoit que Key/Shortcut/JoypadButton |
+| `_unhandled_key_input(event)` | Après `_shortcut_input`, avant `_unhandled_input` | Hotkeys clavier globales filtrées (pas de souris). Parfait pour F1, ESC, etc., quand l’UI n’a rien pris |
+| `_unhandled_input(event)`| En dernier, si personne n’a consommé l’événement     | Gameplay “normal” : tirer, sauter, bouger la caméra **sans casser l’UI**                 |
+| `_exit_tree()`           | Quand le node quitte l’arbre                         | Cleanup : déconnecter signaux, arrêter timers, libérer ressources                        |
 
 ---
+
+<br /><br />
 
 # ⚠️ 4. Ordre Parent / Enfants dans Godot (TRÈS IMPORTANT)
 
@@ -247,6 +255,8 @@ void Parent::_ready() {
 | `_exit_tree()`       | Enfants → Parent     | Inverse de `_enter_tree()`                   |
 
 ---
+
+<br /><br />
 
 # 🔵 5. Exemple complet (GDScript)
 
