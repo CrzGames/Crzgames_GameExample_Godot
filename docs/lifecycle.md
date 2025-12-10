@@ -158,13 +158,9 @@ Exemple : un `Button` avec un raccourci clavier.
 
 # ⚠️ 4. Ordre Parent / Enfants dans Godot (TRÈS IMPORTANT)
 
-Godot **n’appelle pas** `_enter_tree()`, `_exit_tree` et `_ready()` dans le même ordre.
+Godot **n’appelle pas** `_enter_tree()`, `_exit_tree` et `_ready()` dans le même ordre si c'est un enfant ou parent.
 
-C’est un piège très courant.
-
----
-
-# 🔷 Ordre réel pour `_enter_tree()`
+## 🔷 Ordre réel pour `_enter_tree()`
 
 Lorsqu’un node entre dans l’arbre, l'ordre d’appel est :
 
@@ -185,7 +181,7 @@ de scène)**.
 
 ---
 
-# 🔶 Ordre réel pour `_ready()`
+## 🔶 Ordre réel pour `_ready()`
 
 Une fois que tous les nodes sont dans l’arbre :
 
@@ -207,9 +203,7 @@ _parent._ready()
 
 ---
 
-# ❗ Ce que cela implique dans la pratique
-
-## ⚠️ Erreur fréquente — Dans le parent
+## ❗ Ce que cela implique dans la pratique
 
 ### GDScript
 ```gdscript
@@ -238,7 +232,7 @@ void Parent::_ready() {
 
 ---
 
-# 📘 Résumé des règles essentielles
+## 📘 Résumé des règles essentielles
 
 | Callback              | Ordre               | Garantie                                   |
 |----------------------|----------------------|---------------------------------------------|
@@ -248,7 +242,7 @@ void Parent::_ready() {
 
 ---
 
-# 🎯 À retenir absolument
+## 🎯 À retenir absolument
 
 > **Ne fais jamais d’opérations de scène dans `_enter_tree()` qui supposent que les enfants sont prêts.  
 Utilise `_ready()` pour toute logique dépendante de la hiérarchie.**
