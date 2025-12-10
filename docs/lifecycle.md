@@ -23,8 +23,6 @@ Quand un Node est instancié et ajouté à la scène, Godot appelle les callback
 
 # 🔵 2. Description détaillée de chaque méthode
 
----
-
 ## 2.1 `_init()`  
 📌 **Appelé lors de l’instanciation de l’objet.**  
 En C++, ceci correspond au **constructeur**.
