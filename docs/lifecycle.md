@@ -4,7 +4,7 @@ Ce document explique **toutes les méthodes du cycle de vie d’un Node**, leur 
 
 ---
 
-<br /><br />
+<br />
 
 # 🔵 1. Vue d’ensemble — Ordre réel d’appel
 
@@ -21,9 +21,11 @@ Quand un Node est instancié et ajouté à l'arbre de scène, Godot appelle les 
 9. **_unhandled_key_input( event )**  
 10. **_exit_tree()**
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 # 🔵 2. Description détaillée de chaque méthode
 
@@ -141,9 +143,11 @@ Exemple : un `Button` avec un raccourci clavier.
 - Libérer des ressources  
 - Sauvegarder état temporaire
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 # 🔵 3. Résumé
 
@@ -160,9 +164,11 @@ Exemple : un `Button` avec un raccourci clavier.
 | `_unhandled_input(event)`| En dernier, si personne n’a consommé l’événement     | Gameplay “normal” : tirer, sauter, bouger la caméra **sans casser l’UI**                 |
 | `_exit_tree()`           | Quand le node quitte l’arbre                         | Cleanup : déconnecter signaux, arrêter timers, libérer ressources                        |
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 # ⚠️ 4. Ordre Parent / Enfants dans Godot (TRÈS IMPORTANT)
 
@@ -254,9 +260,11 @@ void Parent::_ready() {
 | `_ready()`           | Enfants → Parent     | Tous les children sont prêts avant le parent |
 | `_exit_tree()`       | Enfants → Parent     | Inverse de `_enter_tree()`                   |
 
+<br />
+
 ---
 
-<br /><br />
+<br />
 
 # 🔵 5. Exemple complet en GDScript
 
