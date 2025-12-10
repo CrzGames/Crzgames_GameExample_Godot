@@ -258,7 +258,7 @@ void Parent::_ready() {
 
 <br /><br />
 
-# 🔵 5. Exemple complet (GDScript)
+# 🔵 5. Exemple complet en GDScript
 
 ```gdscript
 extends Node
