@@ -2,7 +2,7 @@
 
 Ce document explique comment :
 
-- créer un module C++ pour Godot (exemple : `summator`) ;
+- créer un module C++ pour Godot ;
 - comprendre **quand il faut `GDCLASS` / `GDREGISTER_*`** ;
 - utiliser des **classes C++ “pures”** pour faire de la vraie POO sans contraintes ;
 - créer des **vrais types visibles dans l’éditeur** (nodes et resources avec propriétés dans l’inspecteur).
