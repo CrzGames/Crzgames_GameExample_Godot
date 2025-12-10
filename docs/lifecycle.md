@@ -266,8 +266,9 @@ void Parent::_ready() {
 
 <br />
 
-# 🔵 5. Exemple complet en GDScript
+# 🔵 5. Exemples complet en GDScript / C++
 
+## GDScript
 ```gdscript
 extends Node
 
@@ -304,7 +305,7 @@ func _exit_tree():
 
 ---
 
-# 🔵 5. Exemple complet en C++ (Module / GDExtension)
+## C++ (Module / GDExtension)
 
 ### Header : `my_node.h`
 
