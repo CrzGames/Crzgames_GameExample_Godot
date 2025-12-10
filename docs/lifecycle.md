@@ -11,8 +11,8 @@ Quand un Node est instancié et ajouté à la scène, Godot appelle les callback
 1. **_init()** (GDScript) / constructeur C++  
 2. **_enter_tree()**  
 3. **_ready()**  
-4. **_process( delta )** (chaque frame si activé)  
-5. **_physics_process( delta )** (60 FPS si activé)  
+4. **_process( delta )**
+5. **_physics_process( delta )**
 6. **_input( event )**  
 7. **_shortcut_input( event )**  
 8. **_unhandled_input( event )**  
