@@ -5,6 +5,8 @@ Godot 4.x inclut un système de **tests unitaires natifs** basé sur la librairi
 
 ---
 
+<br /><br />
+
 ## 📁 Structure obligatoire pour les tests
 
 Pour que Godot détecte vos tests :
@@ -35,6 +37,8 @@ modules/
 
 ---
 
+<br /><br />
+
 ## ❗ Règles de nommage importantes
 
 | Élément | Règle |
@@ -52,6 +56,8 @@ test_summator_edge_cases.h
 ```
 
 ---
+
+<br /><br />
 
 ## ✨ Exemple minimal de fichier de test
 
@@ -78,6 +84,8 @@ TEST_CASE("[Summator] Comportement du reset") {
 
 ---
 
+<br /><br />
+
 ## ▶️ Lancer les tests unitaires
 
 Après compilation du moteur (avec votre module), lancez les tests avec :
@@ -95,6 +103,8 @@ Après compilation du moteur (avec votre module), lancez les tests avec :
 | `--success` | affiche également les tests réussis |
 
 ---
+
+<br /><br />
 
 ## ⭐ Résumé
 
