@@ -1,4 +1,4 @@
-# 📘 Godot 4.x - Modules C++ Godot / Créer ses propres types et architecture C++
+# 📘 Godot 4.x - Modules C++ / Créer ses propres types et architecture C++
 
 Ce document explique comment :
 
