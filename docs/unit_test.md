@@ -1,6 +1,6 @@
 # 📘 Godot 4.x - Tests unitaires pour les modules C++ Godot
 
-Godot 4.x inclut un système de **tests unitaires natifs** basé sur **doctest**.  
+Godot 4.x inclut un système de **tests unitaires natifs** basé sur la librairie original en C++ : **doctest**.  
 ⚠️ **Les tests unitaires ne fonctionnent que pour les modules C++**, et **pas** pour les extensions GDExtension.
 
 ---
