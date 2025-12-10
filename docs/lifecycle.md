@@ -220,8 +220,6 @@ public:
 };
 ```
 
----
-
 ### Implémentation : `my_node.cpp`
 
 ```cpp
@@ -280,8 +278,6 @@ void MyNode::_exit_tree() {
     print_line("MyNode::_exit_tree()");
 }
 ```
-
----
 
 ### Enregistrement dans le module
 
