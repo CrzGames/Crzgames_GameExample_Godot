@@ -7,7 +7,7 @@ void initialize_summator_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-	ClassDB::register_class<Summator>();
+	GDREGISTER_CLASS(Summator);
 }
 
 void uninitialize_summator_module(ModuleInitializationLevel p_level) {

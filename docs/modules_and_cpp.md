@@ -374,7 +374,9 @@ GDREGISTER_RUNTIME_CLASS(DynamicRuntimeType);
 
 ---
 
-### 4.6 Fichier complet pour : `register_types.cpp`
+### 4.6 Fichier complet final pour : `register_types.cpp`
+
+C'est dans ce fichier qu'il faut faire l'enregistrement des classes en fonction du type de classe Godot.
 
 ```cpp
 // register_types.cpp
@@ -399,4 +401,220 @@ void initialize_mymodule_module(ModuleInitializationLevel p_level) {
 void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
     if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) return;
 }
+```
+
+---
+
+## 5. _bind_methods() : les 4 choses que tu peux exposer à Godot
+
+**_bind_methods()** est la fonction centrale qui construit le pont C++ → Godot.
+
+### 5.1 Ce qu’on peut y déclarer
+| Élément | Code utilisé | Permet |
+|---------|--------|--------|
+| Méthodes | ClassDB::bind_method() | Appeler une méthode C++ d'une classe depuis GDScript |
+| Propriétés | ADD_PROPERTY() | Voir/éditer un champ dans l’inspecteur de l'editeur Godot |
+| Signaux | ADD_SIGNAL() | Définir des signaux que la classe peut émettre vers GDScript |
+| Enums | BIND_ENUM_CONSTANT() | Exposer des constantes utilisables depuis GDScript |
+
+### 5.2 Exemple complet : classe Unit côté C++
+
+#### 5.2.1 Header : unit.h
+```cpp
+// unit.h
+#pragma once
+
+#include "scene/2d/node_2d.h"
+
+class Unit : public Node2D {
+    GDCLASS(Unit, Node2D);
+
+public:
+    enum UnitType {
+        UNIT_INFANTRY = 0,
+        UNIT_TANK     = 1,
+        UNIT_AIRCRAFT = 2,
+    };
+
+private:
+    float speed = 100.0f;
+    int health = 100;
+    UnitType type = UNIT_INFANTRY;
+
+protected:
+    static void _bind_methods();
+
+public:
+    // Méthodes exposées
+    void set_speed(float p_speed);
+    float get_speed() const;
+
+    void set_health(int p_health);
+    int get_health() const;
+
+    void set_type(UnitType p_type);
+    UnitType get_type() const;
+
+    // Exemple de logique qui émet un signal
+    void take_damage(int p_amount);
+};
+```
+
+#### 5.2.2 Implémentation : unit.cpp
+```cpp
+// unit.cpp
+#include "unit.h"
+#include "core/object/class_db.h"
+
+void Unit::_bind_methods() {
+    // 1) MÉTHODES : bind_method → appelables depuis GDScript
+    ClassDB::bind_method(D_METHOD("set_speed", "speed"), &Unit::set_speed);
+    ClassDB::bind_method(D_METHOD("get_speed"), &Unit::get_speed);
+
+    ClassDB::bind_method(D_METHOD("set_health", "health"), &Unit::set_health);
+    ClassDB::bind_method(D_METHOD("get_health"), &Unit::get_health);
+
+    ClassDB::bind_method(D_METHOD("set_type", "type"), &Unit::set_type);
+    ClassDB::bind_method(D_METHOD("get_type"), &Unit::get_type);
+
+    ClassDB::bind_method(D_METHOD("take_damage", "amount"), &Unit::take_damage);
+
+    // 2) PROPRIÉTÉS : ADD_PROPERTY → visibles dans l’inspecteur
+    ADD_PROPERTY(
+        PropertyInfo(Variant::FLOAT, "speed", PROPERTY_HINT_RANGE, "0,1000,1"),
+        "set_speed",
+        "get_speed"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::INT, "health", PROPERTY_HINT_RANGE, "0,999,1"),
+        "set_health",
+        "get_health"
+    );
+
+    ADD_PROPERTY(
+        PropertyInfo(Variant::INT, "type", PROPERTY_HINT_ENUM, "Infantry,Tank,Aircraft"),
+        "set_type",
+        "get_type"
+    );
+
+    // 3) SIGNAUX : ADD_SIGNAL → GDScript peut se connecter dessus
+    ADD_SIGNAL(MethodInfo("health_changed",
+        PropertyInfo(Variant::INT, "new_health")
+    ));
+
+    ADD_SIGNAL(MethodInfo("unit_died"));
+
+    // 4) ENUM / CONSTANTES : BIND_ENUM_CONSTANT → accessibles en script
+    BIND_ENUM_CONSTANT(UNIT_INFANTRY);
+    BIND_ENUM_CONSTANT(UNIT_TANK);
+    BIND_ENUM_CONSTANT(UNIT_AIRCRAFT);
+}
+
+// ---- Implémentation simple des méthodes ----
+
+void Unit::set_speed(float p_speed) {
+    speed = p_speed;
+}
+
+float Unit::get_speed() const {
+    return speed;
+}
+
+void Unit::set_health(int p_health) {
+    health = p_health;
+    emit_signal("health_changed", health);
+    if (health <= 0) {
+        emit_signal("unit_died");
+    }
+}
+
+int Unit::get_health() const {
+    return health;
+}
+
+void Unit::set_type(UnitType p_type) {
+    type = p_type;
+}
+
+Unit::UnitType Unit::get_type() const {
+    return type;
+}
+
+void Unit::take_damage(int p_amount) {
+    set_health(health - p_amount);
+}
+```
+
+#### 5.2.3 Enregistrement dans ton module
+
+```cpp
+// register_types.cpp
+#include "register_types.h"
+#include "core/object/class_db.h"
+#include "unit.h"
+
+void initialize_mymodule_module(ModuleInitializationLevel p_level) {
+    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+        return;
+    }
+
+    GDREGISTER_CLASS(Unit);
+}
+
+void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
+    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+        return;
+    }
+}
+```
+
+#### 5.2.4 Utilisation côté GDScript
+
+Exemple de Node scripté (le Unit est dans la scène)
+```cpp
+# UnitController.gd
+extends Node2D
+
+@onready var unit: Unit = $Unit   # suppose que tu as un Node "Unit" dans la scène
+
+func _ready() -> void:
+    # Connexion des signaux C++
+    unit.connect("health_changed", Callable(self, "_on_unit_health_changed"))
+    unit.connect("unit_died", Callable(self, "_on_unit_died"))
+
+    # Utilisation des propriétés exposées
+    unit.speed = 250.0  # grâce à ADD_PROPERTY + set_speed/get_speed
+    unit.health = 80
+
+    # Utilisation de l’enum exposé
+    unit.type = Unit.UNIT_TANK
+
+    # Appel de méthode C++ bindée
+    unit.take_damage(30) # va émettre "health_changed"
+
+func _on_unit_health_changed(new_health: int) -> void:
+    print("HP de l’unité :", new_health)
+
+func _on_unit_died() -> void:
+    print("L’unité est morte, faire quelque chose ici.")
+```
+
+Exemple de création d’Unit à la volée en GDScript
+
+```cpp
+func _ready() -> void:
+    var u := Unit.new()
+    add_child(u)
+
+    u.connect("unit_died", Callable(self, "_on_dynamic_unit_died"))
+
+    u.speed = 150.0
+    u.health = 50
+    u.type = Unit.UNIT_INFANTRY
+
+    u.take_damage(60) # déclenche unit_died
+
+func _on_dynamic_unit_died() -> void:
+    print("Une unité créée en runtime est morte.")
 ```
