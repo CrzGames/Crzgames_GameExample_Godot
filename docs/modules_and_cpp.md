@@ -975,20 +975,28 @@ module_env = env.Clone()
 # Ajouter les indicateurs CCFLAGS au code C et C++ : 
 # module_env.Append(CCFLAGS=['-O2'])
 
+# Petit helper pour savoir où on est
+platform = env.get("platform", "")
+
 if ARGUMENTS.get('summator_shared', 'no') == 'yes':
     # ==========================
     # DEV : bibliothèque partagée
     # ==========================
 
-    # Un code indépendant de la position est requis pour une bibliothèque partagée.
-    module_env.Append(CCFLAGS=['-fPIC'])
+    # PIC : requis sur Linux/BSD, généralement OK sur macOS, pas nécessaire sur Windows (et peut casser MSVC)
+    if platform in ["linuxbsd", "macos"]:
+        # Un code indépendant de la position est requis pour une bibliothèque partagée.
+        module_env.Append(CCFLAGS=['-fPIC'])
 
     # N'injectez pas les dépendances de Godot dans notre bibliothèque partagée.
     module_env['LIBS'] = []
 
     # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
-    # mais il est préférable de la placer dans `bin` à côté du
-    # binaire Godot.
+    # mais il est préférable de la placer dans `bin` à côté du binaire Godot.
+    # Génère la lib partagée dans /bin à côté du binaire Godot
+    # - Linux/BSD : libsummator.*.so
+    # - macOS     : libsummator.*.dylib
+    # - Windows   : summator.*.dll (et un .lib d'import selon toolchain)
     shared_lib = module_env.SharedLibrary(
         target='#bin/summator',
         source=sources
