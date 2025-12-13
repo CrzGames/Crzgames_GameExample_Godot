@@ -34,9 +34,10 @@ Il explique notamment comment :
 - [5. `_bind_methods()` : exposer des éléments à Godot](#5-_bind_methods--exposer-des-éléments-à-godot)
   - [5.1 Ce qu’on peut exposer](#51-ce-quon-peut-exposer)
   - [5.2 Exemple complet : classe Unit côté C++](#52-exemple-complet--classe-unit-côté-c)
-- [6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13 avec `#include "core/method_bind_ext.gen.inc"`)](#6-augmenter-le-nombre-de-paramètres-bindés-dune-méthode-dune-classe-c-5-par-défaut--13-avec-include-coremethod_bind_extgeninc)
-  - [6.1 Activer le binding étendu (jusqu’à 13 paramètres)](#61-activer-le-binding-étendu-jusquà-13-paramètres)
+- [6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13`)](#6-augmenter-le-nombre-de-paramètres-bindés-dune-méthode-dune-classe-c-5-par-défaut--13-avec-include-coremethod_bind_extgeninc)
+  - [6.1 Activer le nombre de paramètre étendu d'une méthode (jusqu’à 13 paramètres au lieu de 5)](#61-activer-le-nombre-de-paramètre-étendu-dune-méthode-jusquà-13-paramètres-au-lieu-de-5)
   - [6.2 Recommandation (design)](#62-recommandation-design)
+(#62-recommandation-design)
 - [7.0 Nettoyage des fichiers générés par SCons](#70-nettoyage-des-fichiers-générés-par-scons)
   - [7.1 Quand faut-il nettoyer ?](#71-quand-faut-il-nettoyer-)
   - [7.2 Nettoyage avec SCons](#72-nettoyage-avec-scons)
@@ -737,7 +738,7 @@ Godot utilise un système interne de *MethodBind* qui, **par défaut**, ne fourn
 ✅ Donc : une méthode exposée avec **0 à 5 paramètres** marche.  
 ⚠️ Si tu veux exposer une méthode avec **6 à 13 paramètres**, tu dois activer les binders étendus.
 
-### 6.1 Activer le binding étendu (jusqu’à 13 paramètres)
+### 6.1 Activer le nombre de paramètre étendu d'une méthode (jusqu’à 13 paramètres au lieu de 5)
 
 Il suffit d’inclure le header suivant **dans le `.cpp` où tu fais tes `bind_method`** (souvent le fichier qui contient `_bind_methods()`) :
 
