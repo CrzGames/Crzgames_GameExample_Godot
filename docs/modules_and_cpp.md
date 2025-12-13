@@ -53,7 +53,7 @@ Il explique notamment comment :
   - [8.3 Cas d’usage concrets](#83-cas-dusage-concrets)
   - [8.4 Résumé rapide](#84-résumé-rapide)
 
-- [9.0 Compilation statique vs bibliothèque partagée (essentiel pour le développement)](#90-compilation-statique-vs-bibliothèque-partagée-essentiel-pour-le-développement)
+- [9.0 Compilation d'un module C++ : statique (Template) vs bibliothèque partagée (Editor)](#9-compilation-statique-vs-bibliothèque-partagée-template--editor)
   - [9.1 Principe général](#91-principe-général)
   - [9.2 SCsub unique avec switch DEV / PROD (recommandé)](#92-scsub-unique-avec-switch-dev--prod-recommandé)
   - [9.3 Commandes SCons](#93-commandes-scons)
@@ -923,9 +923,9 @@ scons custom_modules=..\..\modules
 
 <br />
 
-## 9.0 Compilation statique vs bibliothèque partagée (Template / Editor)
+## 9.0 Compilation d'un module C++ : statique (Template) vs bibliothèque partagée (Editor)
 
-⚠️ Disponible que pour macOS et Linux/BSD concernant les bibliothèque partagée pendant la phase de développement d'un module C++ Godot, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC.
+⚠️ Disponible que pour macOS et Linux/BSD concernant les bibliothèque partagée pendant la phase de développement d'un module C++ Godot, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC. Donc pour la phase de développement sous Windows/MSVC il faudras utiliser la compilation static comme pour les Template.
 
 Lors du développement d’un module C++ Godot, **le temps de compilation devient rapidement un problème**.
 
