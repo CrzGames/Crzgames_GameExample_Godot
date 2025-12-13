@@ -3,6 +3,7 @@
 Les notifications sont des **messages internes du moteur Godot** envoyés à chaque `Node` via :
 
 ```gdscript
+# GDScript
 func _notification(what):
 ```
 
