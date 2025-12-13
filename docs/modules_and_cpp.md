@@ -19,6 +19,8 @@ Il explique notamment comment :
 
 ---
 
+<br />
+
 ## 📑 Sommaire
 
 - [0. Structure minimale d’un module C++ Godot](#0-structure-minimale-dun-module-c-godot)
