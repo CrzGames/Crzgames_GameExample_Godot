@@ -925,7 +925,7 @@ scons custom_modules=..\..\modules
 
 ## 9.0 Compilation d'un module C++ : statique (Template) vs bibliothèque partagée (Editor)
 
-⚠️ Disponible que pour macOS et Linux/BSD concernant les bibliothèque partagée pendant la phase de développement d'un module C++ Godot, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC. Donc pour la phase de développement sous Windows/MSVC il faudras utiliser la compilation static comme pour les Template.
+⚠️ Disponible que pour macOS et Linux/BSD concernant les bibliothèque partagée pendant la phase de développement d'un module C++ Godot, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC. Donc pour la phase de développement sous Windows/MSVC il faudras utiliser la compilation static pour l'editeur comme pour les Template.
 
 Lors du développement d’un module C++ Godot, **le temps de compilation devient rapidement un problème**.
 
