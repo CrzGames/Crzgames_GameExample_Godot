@@ -1,4 +1,4 @@
-# 📘 Godot 4.x — Guide des Notifications (`_notification(what)`)
+# 📘 Godot 4.x — Guide des Notifications d'un `Node`
 
 Les notifications sont des **messages internes du moteur Godot** envoyés à chaque `Node` via :
 
@@ -15,7 +15,7 @@ Elles permettent de réagir à des événements que les callbacks classiques **n
 - avertissements mémoire  
 - événements internes du moteur  
 
-Ce fichier regroupe les **notifications les plus utiles**, classées par catégories.
+Retrouvé toute les constantes NOTIFICATION_*, sur la documentation officiel : https://docs.godotengine.org/en/stable/classes/class_node.html#constants
 
 <br />
 
@@ -41,7 +41,7 @@ Ce fichier regroupe les **notifications les plus utiles**, classées par catégo
 
 <br />
 
-# 🔵 2. Notifications OS / Fenêtre (les plus importantes)
+# 🔵 2. Notifications OS / Fenêtre
 
 | Notification | Quand ? |
 |-------------|---------|
@@ -61,95 +61,9 @@ Ce fichier regroupe les **notifications les plus utiles**, classées par catégo
 
 <br />
 
-# 🔵 3. Notifications Application (Android / iOS / Desktop)
-
-| Notification | Explication |
-|-------------|-------------|
-| `NOTIFICATION_APPLICATION_PAUSED` | L’application passe en arrière-plan |
-| `NOTIFICATION_APPLICATION_RESUMED` | L’application revient au premier plan |
-| `NOTIFICATION_APPLICATION_FOCUS_IN` | L'application reçoit le focus |
-| `NOTIFICATION_APPLICATION_FOCUS_OUT` | L'application perd le focus |
-| `NOTIFICATION_OS_MEMORY_WARNING` | Avertissement mémoire (iOS) |
-
-⚠️ **Sur iOS, après un pause, tu n’as que ~5 secondes pour terminer un traitement**, sinon l’app est tuée.
-
-<br />
-
----
-
-<br />
-
-# 🔵 4. Notifications UI, Drag & Drop, Éditeur
-
-| Notification | Explication |
-|-------------|-------------|
-| `NOTIFICATION_DRAG_BEGIN` | Début d’un drag UI |
-| `NOTIFICATION_DRAG_END` | Fin d’un drag |
-| `NOTIFICATION_TEXT_SERVER_CHANGED` | Changement du moteur de rendu texte |
-| `NOTIFICATION_EDITOR_PRE_SAVE` | Avant la sauvegarde d’une scène dans l’éditeur |
-| `NOTIFICATION_EDITOR_POST_SAVE` | Après une sauvegarde |
-
-<br />
-
----
-
-<br />
-
-# 🔵 5. Notifications Hiérarchie / Noms / Enfants
-
-| Notification | Explication |
-|-------------|-------------|
-| `NOTIFICATION_PATH_RENAMED` | Un node ou parent change de nom |
-| `NOTIFICATION_CHILD_ORDER_CHANGED` | Un enfant est ajouté, retiré ou déplacé |
-| `NOTIFICATION_PARENTED` | Ce node vient d’être ajouté au parent |
-| `NOTIFICATION_UNPARENTED` | Ce node vient d’être retiré du parent |
-
-<br />
-
----
-
-<br />
-
-# 🔵 6. Notifications traduction / langue
-
-| Notification | Explication |
-|-------------|-------------|
-| `NOTIFICATION_TRANSLATION_CHANGED` | La langue ou traduction a changé |
-
-Exemple :
-
-```gdscript
-func _notification(what):
-    if what == NOTIFICATION_TRANSLATION_CHANGED:
-        if not is_node_ready():
-            await ready
-        $Label.text = atr("%d Bananas") % banana_counter
-```
-
-<br />
-
----
-
-<br />
-
-# 🔵 7. Notifications avancées & internes
-
-| Notification | Explication |
-|-------------|-------------|
-| `NOTIFICATION_RESET_PHYSICS_INTERPOLATION` | Réinitialisation interpolation |
-| `NOTIFICATION_INTERNAL_PROCESS` | Process interne |
-| `NOTIFICATION_INTERNAL_PHYSICS_PROCESS` | Physique interne |
-| `NOTIFICATION_CRASH` | Godot va crasher (debug) |
-
-<br />
-
----
-
-<br />
-
 # 🟣 Exemple d’utilisation en GDScript / C++
 
-## ✔ GDScript
+## GDScript
 
 ```gdscript
 func _notification(what):
@@ -172,7 +86,7 @@ func _notification(what):
 
 ---
 
-## ✔ C++
+## C++
 
 ```cpp
 void MyNode::_notification(int p_what) {
