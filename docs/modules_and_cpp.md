@@ -923,9 +923,9 @@ scons custom_modules=..\..\modules
 
 <br />
 
-## 9.0 Compilation statique vs bibliothèque partagée (essentiel pour le développement)
+## 9.0 Compilation statique vs bibliothèque partagée (Template / Editor)
 
-⚠️ Disponible que pour macOS et Linux/BSD concernant les librarye partagée, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC.
+⚠️ Disponible que pour macOS et Linux/BSD concernant les bibliothèque partagée pendant la phase de développement d'un module C++ Godot, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC.
 
 Lors du développement d’un module C++ Godot, **le temps de compilation devient rapidement un problème**.
 
@@ -937,7 +937,7 @@ C’est **parfait pour la production**, mais **très pénalisant pendant le dév
   - rallonge fortement le **temps de build** ;
 - même si **un seul fichier `.cpp` change**, le binaire final doit être reconstruit.
 
-👉 Pour résoudre ce problème **pendant le développement**, Godot permet de compiler un module sous forme de **bibliothèque partagée** (`.so`, `.dll`, `.dylib`) chargée dynamiquement au lancement.
+👉 Pour résoudre ce problème **pendant le développement**, Godot permet de compiler un module sous forme de **bibliothèque partagée** (`.so` et `.dylib`) chargée dynamiquement au lancement.
 
 ---
 
@@ -960,7 +960,6 @@ L’idée est simple :
 ### 9.2 SCsub unique avec switch DEV / PROD (recommandé)
 
 ```python
-# SCsub
 # SCsub
 Import('env')
 
@@ -1033,7 +1032,7 @@ else:
 
 ### 9.3 Commandes SCons
 
-#### 🔧 Développement (bibliothèque partagée) - Pour l'editeur pendant le développement
+#### 🔧 Développement (bibliothèque partagée) - Pour l'editeur Godot pendant la phase de développement
 
 ##### Linux/BSD
 ```bash
@@ -1055,7 +1054,7 @@ Compilation ciblée (accélérer la compilation en spécifiant explicitement vot
 scons platform=macos target=editor profile=../../build-scripts/build_profile_editor.py custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.?.tools.64.dylib
 ```
 
-##### Windows (⚠️Pas de bibliothèque dynamique, compilation static même pour l'editeur)
+##### Windows (⚠️Pas de bibliothèque dynamique, compilation static même pour l'editeur Godot sous Windows)
 ```bash
 scons platform=windows target=editor vsproj=yes vsproj_gen_only=no profile=..\..\build-scripts\build_profile_editor.py custom_modules=..\..\modules summator_shared=no
 ```
@@ -1076,7 +1075,7 @@ scons platform=macos target=template_release profile=../../build-scripts/build_p
 
 ##### Windows
 ```bash
-scons platform=macos target=template_release profile=..\..\build-scripts\build_profile_template_prod.py custom_modules=../../modules summator_shared=no
+scons platform=macos target=template_release profile=..\..\build-scripts\build_profile_template_prod.py custom_modules=..\..\modules summator_shared=no
 ```
 
 ---
