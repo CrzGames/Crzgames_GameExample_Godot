@@ -14,9 +14,11 @@ Elles permettent de réagir à des événements que les callbacks classiques **n
 - drag & drop  
 - perte/gain de focus OS  
 - avertissements mémoire  
-- événements internes du moteur  
-
-Retrouvé toute les constantes NOTIFICATION_*, sur la documentation officiel : https://docs.godotengine.org/en/stable/classes/class_node.html#constants
+- événements internes du moteur
+- 
+📌 Les notifications sont nombreuses : **ce guide ne liste que quelques exemples**.
+- Pour les valeurs exactes et la liste complète :
+  https://docs.godotengine.org/en/stable/classes/class_node.html#constants
 
 <br />
 
