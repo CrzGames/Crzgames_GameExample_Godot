@@ -1,11 +1,51 @@
-# 📘 Godot 4.x - Modules C++ / Créer ses propres types et architecture C++
+# 📘 Godot 4.x — Modules C++  
+## Créer ses propres types, modules et architecture C++
 
-Ce document explique comment :
+Ce document est un **guide complet et structuré** pour travailler avec des **modules C++ natifs dans Godot 4.x**.
 
-- créer un module C++ pour Godot ;
-- comprendre **quand il faut `GDCLASS` / `GDREGISTER_*`** ;
-- utiliser des **classes C++ “pures”** pour faire de la vraie POO sans contraintes ;
-- créer des **vrais types visibles dans l’éditeur** (nodes et resources avec propriétés dans l’inspecteur).
+Il explique notamment comment :
+
+- créer un module C++ pour Godot (intégré ou via `custom_modules`) ;
+- comprendre **quand et pourquoi utiliser `GDCLASS` / `GDREGISTER_*`** ;
+- organiser du **C++ “pur”** pour une vraie POO sans dépendance inutile au moteur ;
+- exposer correctement des **types Godot** (Nodes, Resources, classes runtime) ;
+- maîtriser le **système de binding** (`_bind_methods`, propriétés, signaux, enums) ;
+- gérer les **limites internes du moteur** (nombre de paramètres, fichiers générés) ;
+- nettoyer et maintenir un build propre avec **SCons** ;
+- **override / remplacer un module intégré** du moteur par une implémentation custom.
+
+<br />
+
+---
+
+## 📑 Sommaire
+
+- [0. Structure minimale d’un module C++ Godot](#0-structure-minimale-dun-module-c-godot)
+- [1. Où mettre le module ?](#1-où-mettre-le-module)
+- [2. `register_types.h / register_type.cpp` : ce qui est obligatoire et ce qui ne l’est pas](#2-register_typesh--register_typecpp--ce-qui-est-obligatoire-et-ce-qui-ne-lest-pas)
+- [3. Fichiers de build : `SCsub` et `config.py`](#3-fichiers-de-build--scsub-et-configpy)
+- [4. Les 5 types de classes C++ dans Godot](#4-les-5-types-de-classes-c-dans-godot)
+  - [4.1 Classe C++ pure (non Godot et non exposée)](#41-classe-c-pure-non-godot-et-non-exposée)
+  - [4.2 Classe interne Godot (non exposée)](#42-classe-interne-godot-non-exposée)
+  - [4.3 Classe abstraite Godot (exposée)](#43-classe-abstraite-godot-exposée)
+  - [4.4 Classe Godot (exposée)](#44-classe-godot-exposée)
+  - [4.5 Classe runtime Godot (exposée)](#45-classe-runtime-godot-exposée)
+  - [4.6 Fichier complet final pour : `register_types.cpp`](#46-fichier-complet-final-pour--register_typescpp)
+- [5. `_bind_methods()` : exposer des éléments à Godot](#5-_bind_methods--exposer-des-éléments-à-godot)
+  - [5.1 Ce qu’on peut exposer](#51-ce-quon-peut-exposer)
+  - [5.2 Exemple complet : classe Unit côté C++](#52-exemple-complet--classe-unit-côté-c)
+- [6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13 avec `#include "core/method_bind_ext.gen.inc"`)](#6-augmenter-le-nombre-de-paramètres-bindés-dune-méthode-dune-classe-c-5-par-défaut--13-avec-include-coremethod_bind_extgeninc)
+  - [6.1 Activer le binding étendu (jusqu’à 13 paramètres)](#61-activer-le-binding-étendu-jusquà-13-paramètres)
+  - [6.2 Recommandation (design)](#62-recommandation-design)
+- [7.0 Nettoyage des fichiers générés par SCons](#70-nettoyage-des-fichiers-générés-par-scons)
+  - [7.1 Quand faut-il nettoyer ?](#71-quand-faut-il-nettoyer-)
+  - [7.2 Nettoyage avec SCons](#72-nettoyage-avec-scons)
+  - [7.3 Bonnes pratiques](#73-bonnes-pratiques)
+- [8.0 Override d'un module C++ intégrée par Godot Engine par notre propre module](#80-override-dun-module-intégrée-par-godot-engine-par-notre-propre-module)
+  - [8.1 Principe général](#81-principe-général)
+  - [8.2 Règle essentielle](#82-règle-essentielle)
+  - [8.3 Cas d’usage concrets](#83-cas-dusage-concrets)
+  - [8.4 Résumé rapide](#84-résumé-rapide)
 
 <br />
 
@@ -148,8 +188,16 @@ void uninitialize_summator_module(ModuleInitializationLevel p_level) {
 }
 ```
 
-Vous **êtes obligé** de fournir ces deux fonctions pour que le module soit intégré en `nommant correctement` le `nom des deux fonctions` par rapport au `nom du dossier du module`,  
-mais **vous n’êtes pas obligé** d’y appeler `GDREGISTER_CLASS, GDREGISTER_ABSTRACT_CLASS..` si vous ne voulez rien exposer à Godot.
+Vous **devez obligatoirement** fournir ces deux fonctions pour que Godot reconnaisse et intègre le module.
+
+Le **nom des fonctions** (`initialize_summator_module` / `uninitialize_summator_module`) doit **correspondre exactement** au nom du dossier du module (`summator` dans cet exemple).
+
+En revanche, vous **n’êtes pas obligé** d’y appeler `GDREGISTER_CLASS`, `GDREGISTER_ABSTRACT_CLASS`, etc.  
+Un module peut parfaitement exister **sans exposer de classes à Godot**, par exemple pour :
+- de la logique interne ;
+- des utilitaires C++ ;
+- du code bas niveau non accessible depuis GDScript.
+
 
 <br />
 
@@ -446,13 +494,13 @@ void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
 
 <br />
 
-## 5. _bind_methods() : les 5 choses que tu peux exposer à Godot
+## 5. _bind_methods() : exposer des éléments à Godot
 
 Documentation officiel pour plus de détaille : https://docs.godotengine.org/fr/4.5/engine_details/architecture/object_class.html
 
 **_bind_methods()** est la fonction centrale qui construit le pont C++ → Godot.
 
-### 5.1 Ce qu’on peut y déclarer
+### 5.1 Ce qu’on peut exposer
 | Élément | Code utilisé | Permet |
 |---------|--------|--------|
 | Méthodes | ClassDB::bind_method() | Appeler une méthode C++ d'une classe depuis GDScript |
@@ -676,7 +724,7 @@ func _on_dynamic_unit_died() -> void:
 
 <br />
 
-## 6. Limite du nombre de paramètres bindés (5 par défaut → 13 avec `#include "core/method_bind_ext.gen.inc"`)
+## 6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13 avec `#include "core/method_bind_ext.gen.inc"`)
 
 Quand tu exposes des méthodes C++ d'une classe à Godot avec :
 
@@ -743,3 +791,119 @@ Même si tu peux monter à **13**, au-delà de ~5 paramètres, c’est souvent p
 - ou une `Resource` / `Object` “Params” (plus typé, plus lisible et plus maintenable).
 
 > 💡 Astuce : si tu commences à avoir des signatures très longues, c’est souvent le signe qu’il faut regrouper ces valeurs dans une structure dédiée.
+
+<br />
+
+---
+
+<br />
+
+## 7.0 Nettoyage des fichiers générés par SCons
+
+Lors du développement de modules C++ ou lors de changements importants dans la configuration de build (options SCons, modules, plateformes, flags…), il peut arriver que Godot échoue à compiler à cause de **fichiers générés obsolètes**.
+
+Ces fichiers sont produits automatiquement par SCons lors des précédentes compilations.
+
+### 7.1 Quand faut-il nettoyer ?
+
+Il est recommandé de faire un nettoyage complet dans les cas suivants :
+
+- erreurs de compilation incohérentes ou inexpliquées ;
+- ajout / suppression d’un module C++ ;
+- changement de `custom_modules` ;
+- changement de plateforme (`platform=windows`, `linux`, `android`, etc.) ;
+- modification importante des options de build (`target`, `tools`, `production`, etc.).
+
+### 7.2 Nettoyage avec SCons
+
+Godot fournit une commande dédiée via SCons :
+
+```bash
+scons --clean <options>
+```
+
+⚠️ **Important** :  
+Les `<options>` doivent être **strictement identiques** à celles utilisées lors de la compilation précédente.
+
+#### Exemple concret
+
+Si tu as compilé Godot avec :
+
+```bash
+scons platform=windows target=editor custom_modules=..\..\modules
+```
+
+Alors le nettoyage doit être fait avec **exactement les mêmes options** :
+
+```bash
+scons --clean platform=windows target=editor custom_modules=..\..\modules
+```
+
+Cela va :
+- supprimer les fichiers `.o`, `.obj`, `.gen.*`, etc. ;
+- forcer une recompilation propre au prochain build ;
+- éviter des erreurs liées à des fichiers générés incompatibles.
+
+### 7.3 Bonnes pratiques
+
+- Toujours nettoyer après une **erreur étrange** ou non reproductible.
+- Toujours nettoyer après avoir **ajouté ou renommé un module**.
+- En CI, privilégier un workspace propre pour éviter ces problèmes.
+
+<br />
+
+---
+
+<br />
+
+## 8.0 Override d'un module intégrée par Godot Engine par notre propre module
+
+Godot permet de **remplacer un module intégré du moteur** par un **module personnalisé**, sans modifier le code source original du moteur.
+
+### 8.1 Principe général
+
+👉 **Si un module personnalisé possède exactement le même nom de dossier qu’un module intégré**,  
+**Godot ne compilera que le module personnalisé**.
+
+Le module intégré est alors **ignoré**.
+
+### 8.2 Règle essentielle
+
+Le nom du dossier du module personnalisé doit être **strictement identique** au module intégré ciblé.
+
+#### Exemple
+
+Module intégré :
+
+```text
+godot/modules/navigation/
+```
+
+Module custom (à nous) :
+
+```text
+modules/navigation/
+```
+
+Compilation :
+
+```bash
+scons custom_modules=..\..\modules
+```
+
+➡️ Résultat :
+- `modules/navigation/` notre module à nous est utilisé ;
+- `godot/modules/navigation/` module intégré à Godot Engine est ignoré.
+
+### 8.3 Cas d’usage concrets
+
+- corriger ou modifier un module existant ;
+- expérimenter une implémentation alternative ;
+- désactiver une feature intégrée sans patcher le moteur.
+
+### 8.4 Résumé rapide
+
+| Situation | Comportement |
+|---------|--------------|
+| Nom différent | Les modules coexistent |
+| Nom de module identique | Le module à nous remplace le module intégré par Godot Engine |
