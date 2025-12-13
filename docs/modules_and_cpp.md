@@ -37,7 +37,7 @@ Il explique notamment comment :
 - [6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13`)](#6-augmenter-le-nombre-de-paramètres-bindés-dune-méthode-dune-classe-c-5-par-défaut--13-avec-include-coremethod_bind_extgeninc)
   - [6.1 Activer le nombre de paramètre étendu d'une méthode (jusqu’à 13 paramètres au lieu de 5)](#61-activer-le-nombre-de-paramètre-étendu-dune-méthode-jusquà-13-paramètres-au-lieu-de-5)
   - [6.2 Recommandation (design)](#62-recommandation-design)
-(#62-recommandation-design)
+
 - [7.0 Nettoyage des fichiers générés par SCons](#70-nettoyage-des-fichiers-générés-par-scons)
   - [7.1 Quand faut-il nettoyer ?](#71-quand-faut-il-nettoyer-)
   - [7.2 Nettoyage avec SCons](#72-nettoyage-avec-scons)
