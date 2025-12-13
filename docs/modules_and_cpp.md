@@ -53,10 +53,11 @@ Il explique notamment comment :
   - [8.3 Cas d’usage concrets](#83-cas-dusage-concrets)
   - [8.4 Résumé rapide](#84-résumé-rapide)
 
-- [9.0 Compilation d'un module C++ : statique (Template) vs bibliothèque partagée (Editor)](#9-compilation-statique-vs-bibliothèque-partagée-template--editor)
+- [9. Compilation d’un module C++ : statique (Template) vs bibliothèque partagée (Editor)](#9-compilation-dun-module-c--statique-template-vs-bibliothèque-partagée-editor)
   - [9.1 Principe général](#91-principe-général)
-  - [9.2 SCsub unique avec switch DEV (Editor) / PROD (Template)](#92-scsub-unique-avec-switch-dev--prod-recommandé)
+  - [9.2 SCsub unique avec switch DEV (Editor) / PROD (Template)](#92-scsub-unique-avec-switch-dev-editor--prod-template)
   - [9.3 Commandes SCons](#93-commandes-scons)
+  - [9.4 Règle absolue : jamais de bibliothèque partagée en production](#-règle-absolue)
 
 <br />
 
@@ -1080,7 +1081,7 @@ scons platform=macos target=template_release profile=..\..\build-scripts\build_p
 
 ---
 
-### ⚠️ Règle absolue
+### ⚠️ Règle absolue : jamais de bibliothèque partagée en production
 
 > **Ne jamais livrer un jeu Godot avec un module compilé en bibliothèque partagée.**
 
