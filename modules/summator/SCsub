@@ -1,17 +1,66 @@
+# SCsub
 Import('env')
 
+sources = Glob("*.cpp")
 
-env.add_source_files(env.modules_sources, "*.cpp") # Ajouter tous les fichiers .cpp à la compilation
+# Commencez par créer un environnement personnalisé pour la bibliothèque partagée.
+module_env = env.Clone()
 
-
-# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes,
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes, 
 # vous pouvez les ajouter aux chemins d'accès de l'environnement :
 # env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
 # env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
 
-
-# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, 
-# vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la 
-# compilation Godot (ce qui peut entraîner des erreurs).
+# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la compilation Godot (ce qui peut entraîner des erreurs).
 # Ajouter les indicateurs CCFLAGS au code C et C++ : 
-# module_env.Append(CCFLAGS=['-O2'])
+# module_env.Append(CCFLAGS=['-O2']) # Exemple d'optimisation de compilation
+
+platform = env.get("platform", "")
+
+if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linuxbsd", "macos"):
+    # ==========================
+    # DEV : bibliothèque partagée
+    # ==========================
+
+    if platform in ("linuxbsd", "macos"):
+        # On ne veut pas embarquer les libs Godot dans la DLL
+        module_env["LIBS"] = []
+        # Un code indépendant de la position est requis pour une bibliothèque partagée.
+        module_env.Append(CCFLAGS=["-fPIC"])
+
+    if env["platform"] == "linuxbsd":
+        # Le module .so résout des symboles depuis l'exécutable Godot
+        module_env.Append(LINKFLAGS=["-rdynamic"])
+
+    if env["platform"] == "macos":
+        # Ceci indique à l'éditeur de liens que les symboles sont externes et seront donc liés dynamiquement.
+        # Requirements : Xcode 15 ou une version ultérieure
+        module_env.Append(LINKFLAGS=["-Wl,-undefined,dynamic_lookup"])
+
+    # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
+    # mais il est préférable de la placer dans `bin` à côté du binaire Godot.
+    # Génère la lib partagée dans /bin à côté du binaire Godot
+    # - Linux/BSD : libsummator.*.so
+    # - macOS     : libsummator.*.dylib
+    shared_lib = module_env.SharedLibrary(
+        target='#bin/summator',
+        source=sources
+    )
+        
+    # Enfin, notifiez l'environnement de compilation principal qu'il dispose désormais de notre bibliothèque partagée
+    # comme nouvelle dépendance.
+    # Les variables d'environnement LIBPATH et LIBS doivent être définies dans l'environnement réel (et non dans le clone)
+    # afin de lier les bibliothèques spécifiées à l'exécutable Godot.
+    env.Append(LIBPATH=['#bin'])
+
+    # SCons souhaite le nom de la bibliothèque avec ses suffixes personnalisés
+    # (par exemple « .linuxbsd.tools.64 ») mais sans l'extension finale « .so ».
+    shared_lib_shim = shared_lib[0].name.rsplit(".", 1)[0]
+    # Ajouter la bibliothèque partagée aux bibliothèques à lier
+    env.Append(LIBS=[shared_lib_shim])
+    
+else:
+    # ==========================
+    # PROD : compilation statique
+    # ==========================
+    module_env.add_source_files(env.modules_sources, sources)

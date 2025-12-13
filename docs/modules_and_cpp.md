@@ -925,6 +925,8 @@ scons custom_modules=..\..\modules
 
 ## 9.0 Compilation statique vs bibliothèque partagée (essentiel pour le développement)
 
+⚠️ Disponible que pour macOS et Linux/BSD concernant les librarye partagée, en attente d'une PR pour que Godot fasse fonctionner sous Windows avec MSVC.
+
 Lors du développement d’un module C++ Godot, **le temps de compilation devient rapidement un problème**.
 
 Par défaut, un module est compilé **statiquement** dans le binaire Godot.  
@@ -959,49 +961,55 @@ L’idée est simple :
 
 ```python
 # SCsub
+# SCsub
 Import('env')
 
-# Tous les .cpp du module
-sources = env.Glob("*.cpp")
+sources = Glob("*.cpp")
 
 # Commencez par créer un environnement personnalisé pour la bibliothèque partagée.
 module_env = env.Clone()
 
-# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes, vous pouvez les ajouter aux chemins d'accès de l'environnement :
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes, 
+# vous pouvez les ajouter aux chemins d'accès de l'environnement :
 # env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
 # env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
 
 # Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la compilation Godot (ce qui peut entraîner des erreurs).
 # Ajouter les indicateurs CCFLAGS au code C et C++ : 
-# module_env.Append(CCFLAGS=['-O2'])
+# module_env.Append(CCFLAGS=['-O2']) # Exemple d'optimisation de compilation
 
-# Petit helper pour savoir où on est
 platform = env.get("platform", "")
 
-if ARGUMENTS.get('summator_shared', 'no') == 'yes':
+if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linuxbsd", "macos"):
     # ==========================
     # DEV : bibliothèque partagée
     # ==========================
 
-    # PIC : requis sur Linux/BSD, généralement OK sur macOS, pas nécessaire sur Windows (et peut casser MSVC)
-    if platform in ["linuxbsd", "macos"]:
+    if platform in ("linuxbsd", "macos"):
+        # On ne veut pas embarquer les libs Godot dans la DLL
+        module_env["LIBS"] = []
         # Un code indépendant de la position est requis pour une bibliothèque partagée.
-        module_env.Append(CCFLAGS=['-fPIC'])
+        module_env.Append(CCFLAGS=["-fPIC"])
 
-    # N'injectez pas les dépendances de Godot dans notre bibliothèque partagée.
-    module_env['LIBS'] = []
+    if env["platform"] == "linuxbsd":
+        # Le module .so résout des symboles depuis l'exécutable Godot
+        module_env.Append(LINKFLAGS=["-rdynamic"])
+
+    if env["platform"] == "macos":
+        # Ceci indique à l'éditeur de liens que les symboles sont externes et seront donc liés dynamiquement.
+        # Requirements : Xcode 15 ou une version ultérieure
+        module_env.Append(LINKFLAGS=["-Wl,-undefined,dynamic_lookup"])
 
     # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
     # mais il est préférable de la placer dans `bin` à côté du binaire Godot.
     # Génère la lib partagée dans /bin à côté du binaire Godot
     # - Linux/BSD : libsummator.*.so
     # - macOS     : libsummator.*.dylib
-    # - Windows   : summator.*.dll (et un .lib d'import selon toolchain)
     shared_lib = module_env.SharedLibrary(
         target='#bin/summator',
         source=sources
     )
-
+        
     # Enfin, notifiez l'environnement de compilation principal qu'il dispose désormais de notre bibliothèque partagée
     # comme nouvelle dépendance.
     # Les variables d'environnement LIBPATH et LIBS doivent être définies dans l'environnement réel (et non dans le clone)
@@ -1010,10 +1018,10 @@ if ARGUMENTS.get('summator_shared', 'no') == 'yes':
 
     # SCons souhaite le nom de la bibliothèque avec ses suffixes personnalisés
     # (par exemple « .linuxbsd.tools.64 ») mais sans l'extension finale « .so ».
-    shared_lib_shim = shared_lib[0].name.rsplit('.', 1)[0]
+    shared_lib_shim = shared_lib[0].name.rsplit(".", 1)[0]
+    # Ajouter la bibliothèque partagée aux bibliothèques à lier
     env.Append(LIBS=[shared_lib_shim])
-    env.Append(LIBPATH=['#bin'])
-
+    
 else:
     # ==========================
     # PROD : compilation statique
@@ -1025,41 +1033,31 @@ else:
 
 ### 9.3 Commandes SCons
 
-#### 🔧 Développement (bibliothèque partagée)
+#### 🔧 Développement (bibliothèque partagée) - Pour l'editeur
 
 ##### Linux/BSD
 ```bash
-scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes
+scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
 ```
 
 Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
 ```bash
-scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes bin/libsummator.linuxbsd.tools.64.so
+scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.linuxbsd.tools.64.so
 ```
 
 ##### macOS
 ```bash
-scons platform=macos target=editor custom_modules=../../modules summator_shared=yes
+scons platform=macos target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
 ```
 
 Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
 ```bash
-scons platform=macos target=editor custom_modules=../../modules summator_shared=yes bin/libsummator.?.tools.64.dylib
-```
-
-##### Windows
-```bash
-scons platform=windows target=editor custom_modules=..\..\modules summator_shared=yes
-```
-
-Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
-```bash
-scons platform=windows target=editor custom_modules=..\..\modules summator_shared=yes bin\summator.windows.tools.64.dll
+scons platform=macos target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.?.tools.64.dylib
 ```
 
 ---
 
-#### 🚀 Production (compilation statique)
+#### 🚀 Production (compilation statique) - Pour les templates (binaire du jeu)
 
 ##### Linux / BSD
 ```bash
@@ -1072,8 +1070,8 @@ scons platform=macos target=editor custom_modules=../../modules
 ```
 
 ##### Windows
-```bat
-scons platform=windows target=editor custom_modules=..\..\modules
+```bash
+scons platform=macos target=editor custom_modules=../../modules
 ```
 
 ---
