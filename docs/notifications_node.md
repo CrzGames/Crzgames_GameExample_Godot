@@ -15,7 +15,8 @@ Elles permettent de réagir à des événements que les callbacks classiques **n
 - perte/gain de focus OS  
 - avertissements mémoire  
 - événements internes du moteur
-- 
+- ...
+
 📌 Les notifications sont nombreuses : **ce guide ne liste que quelques exemples**.
 - Pour les valeurs exactes et la liste complète :
   https://docs.godotengine.org/en/stable/classes/class_node.html#constants
