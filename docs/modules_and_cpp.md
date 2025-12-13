@@ -12,6 +12,7 @@ Il explique notamment comment :
 - maîtriser le **système de binding** (`_bind_methods`, propriétés, signaux, enums) ;
 - gérer les **limites internes du moteur** (nombre de paramètres, fichiers générés) ;
 - nettoyer et maintenir un build propre avec **SCons** ;
+- accélérer fortement les itérations en dev grâce à la **compilation en bibliothèque partagée** (DEV) tout en gardant une **compilation statique** pour la production ;
 - **override / remplacer un module intégré** du moteur par une implémentation custom.
 
 <br />
@@ -24,6 +25,7 @@ Il explique notamment comment :
 - [1. Où mettre le module ?](#1-où-mettre-le-module)
 - [2. `register_types.h / register_type.cpp` : ce qui est obligatoire et ce qui ne l’est pas](#2-register_typesh--register_typecpp--ce-qui-est-obligatoire-et-ce-qui-ne-lest-pas)
 - [3. Fichiers de build : `SCsub` et `config.py`](#3-fichiers-de-build--scsub-et-configpy)
+
 - [4. Les 5 types de classes C++ dans Godot](#4-les-5-types-de-classes-c-dans-godot)
   - [4.1 Classe C++ pure (non Godot et non exposée)](#41-classe-c-pure-non-godot-et-non-exposée)
   - [4.2 Classe interne Godot (non exposée)](#42-classe-interne-godot-non-exposée)
@@ -31,9 +33,11 @@ Il explique notamment comment :
   - [4.4 Classe Godot (exposée)](#44-classe-godot-exposée)
   - [4.5 Classe runtime Godot (exposée)](#45-classe-runtime-godot-exposée)
   - [4.6 Fichier complet final pour : `register_types.cpp`](#46-fichier-complet-final-pour--register_typescpp)
+
 - [5. `_bind_methods()` : exposer des éléments à Godot](#5-_bind_methods--exposer-des-éléments-à-godot)
   - [5.1 Ce qu’on peut exposer](#51-ce-quon-peut-exposer)
   - [5.2 Exemple complet : classe Unit côté C++](#52-exemple-complet--classe-unit-côté-c)
+
 - [6. Augmenter le nombre de paramètres bindés d'une méthode d'une classe C++ (5 par défaut → 13`)](#6-augmenter-le-nombre-de-paramètres-bindés-dune-méthode-dune-classe-c-5-par-défaut--13-avec-include-coremethod_bind_extgeninc)
   - [6.1 Activer le nombre de paramètre étendu d'une méthode (jusqu’à 13 paramètres au lieu de 5)](#61-activer-le-nombre-de-paramètre-étendu-dune-méthode-jusquà-13-paramètres-au-lieu-de-5)
   - [6.2 Recommandation (design)](#62-recommandation-design)
@@ -42,11 +46,17 @@ Il explique notamment comment :
   - [7.1 Quand faut-il nettoyer ?](#71-quand-faut-il-nettoyer-)
   - [7.2 Nettoyage avec SCons](#72-nettoyage-avec-scons)
   - [7.3 Bonnes pratiques](#73-bonnes-pratiques)
+
 - [8.0 Override d'un module C++ intégrée par Godot Engine par notre propre module](#80-override-dun-module-intégrée-par-godot-engine-par-notre-propre-module)
   - [8.1 Principe général](#81-principe-général)
   - [8.2 Règle essentielle](#82-règle-essentielle)
   - [8.3 Cas d’usage concrets](#83-cas-dusage-concrets)
   - [8.4 Résumé rapide](#84-résumé-rapide)
+
+- [9.0 Compilation statique vs bibliothèque partagée (essentiel pour le développement)](#90-compilation-statique-vs-bibliothèque-partagée-essentiel-pour-le-développement)
+  - [9.1 Principe général](#91-principe-général)
+  - [9.2 SCsub unique avec switch DEV / PROD (recommandé)](#92-scsub-unique-avec-switch-dev--prod-recommandé)
+  - [9.3 Commandes SCons](#93-commandes-scons)
 
 <br />
 
@@ -215,18 +225,16 @@ Exemple minimal :
 Import('env')
 
 
+# Créer un environnement de build séparé
 env.add_source_files(env.modules_sources, "*.cpp") # Ajouter tous les fichiers .cpp à la compilation
 
 
-# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes,
-# vous pouvez les ajouter aux chemins d'accès de l'environnement :
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes, vous pouvez les ajouter aux chemins d'accès de l'environnement :
 # env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
 # env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
 
 
-# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, 
-# vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la 
-# compilation Godot (ce qui peut entraîner des erreurs).
+# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la compilation Godot (ce qui peut entraîner des erreurs).
 # Ajouter les indicateurs CCFLAGS au code C et C++ : 
 # module_env.Append(CCFLAGS=['-O2'])
 ```
@@ -908,3 +916,162 @@ scons custom_modules=..\..\modules
 |---------|--------------|
 | Nom différent | Les modules coexistent |
 | Nom de module identique | Le module à nous remplace le module intégré par Godot Engine |
+
+<br />
+
+---
+
+<br />
+
+## 9.0 Compilation statique vs bibliothèque partagée (essentiel pour le développement)
+
+Lors du développement d’un module C++ Godot, **le temps de compilation devient rapidement un problème**.
+
+Par défaut, un module est compilé **statiquement** dans le binaire Godot.  
+C’est **parfait pour la production**, mais **très pénalisant pendant le développement**, car :
+
+- chaque modification du module :
+  - déclenche un **relink du binaire Godot** ;
+  - rallonge fortement le **temps de build** ;
+- même si **un seul fichier `.cpp` change**, le binaire final doit être reconstruit.
+
+👉 Pour résoudre ce problème **pendant le développement**, Godot permet de compiler un module sous forme de **bibliothèque partagée** (`.so`, `.dll`, `.dylib`) chargée dynamiquement au lancement.
+
+---
+
+### 9.1 Principe général
+
+L’idée est simple :
+
+#### 🔧 Développement
+- le module est compilé en **bibliothèque partagée** ;
+- recompilation **rapide** ;
+- itérations fréquentes et confortables.
+
+#### 🚀 Production
+- le module est compilé **statiquement** ;
+- un **seul binaire Godot** ;
+- déploiement propre, fiable et portable.
+
+---
+
+### 9.2 SCsub unique avec switch DEV / PROD (recommandé)
+
+```python
+# SCsub
+Import('env')
+
+# Tous les .cpp du module
+sources = env.Glob("*.cpp")
+
+# Commencez par créer un environnement personnalisé pour la bibliothèque partagée.
+module_env = env.Clone()
+
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes, vous pouvez les ajouter aux chemins d'accès de l'environnement :
+# env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
+# env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
+
+# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la compilation Godot (ce qui peut entraîner des erreurs).
+# Ajouter les indicateurs CCFLAGS au code C et C++ : 
+# module_env.Append(CCFLAGS=['-O2'])
+
+if ARGUMENTS.get('summator_shared', 'no') == 'yes':
+    # ==========================
+    # DEV : bibliothèque partagée
+    # ==========================
+
+    # Un code indépendant de la position est requis pour une bibliothèque partagée.
+    module_env.Append(CCFLAGS=['-fPIC'])
+
+    # N'injectez pas les dépendances de Godot dans notre bibliothèque partagée.
+    module_env['LIBS'] = []
+
+    # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
+    # mais il est préférable de la placer dans `bin` à côté du
+    # binaire Godot.
+    shared_lib = module_env.SharedLibrary(
+        target='#bin/summator',
+        source=sources
+    )
+
+    # Enfin, notifiez l'environnement de compilation principal qu'il dispose désormais de notre bibliothèque partagée
+    # comme nouvelle dépendance.
+    # Les variables d'environnement LIBPATH et LIBS doivent être définies dans l'environnement réel (et non dans le clone)
+    # afin de lier les bibliothèques spécifiées à l'exécutable Godot.
+    env.Append(LIBPATH=['#bin'])
+
+    # SCons souhaite le nom de la bibliothèque avec ses suffixes personnalisés
+    # (par exemple « .linuxbsd.tools.64 ») mais sans l'extension finale « .so ».
+    shared_lib_shim = shared_lib[0].name.rsplit('.', 1)[0]
+    env.Append(LIBS=[shared_lib_shim])
+    env.Append(LIBPATH=['#bin'])
+
+else:
+    # ==========================
+    # PROD : compilation statique
+    # ==========================
+    module_env.add_source_files(env.modules_sources, sources)
+```
+
+---
+
+### 9.3 Commandes SCons
+
+#### 🔧 Développement (bibliothèque partagée)
+
+##### Linux/BSD
+```bash
+scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes
+```
+
+Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
+```bash
+scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes bin/libsummator.linuxbsd.tools.64.so
+```
+
+##### macOS
+```bash
+scons platform=macos target=editor custom_modules=../../modules summator_shared=yes
+```
+
+Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
+```bash
+scons platform=macos target=editor custom_modules=../../modules summator_shared=yes bin/libsummator.?.tools.64.dylib
+```
+
+##### Windows
+```bash
+scons platform=windows target=editor custom_modules=..\..\modules summator_shared=yes
+```
+
+Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
+```bash
+scons platform=windows target=editor custom_modules=..\..\modules summator_shared=yes bin\summator.windows.tools.64.dll
+```
+
+---
+
+#### 🚀 Production (compilation statique)
+
+##### Linux / BSD
+```bash
+scons platform=linuxbsd target=editor custom_modules=../../modules
+```
+
+##### macOS
+```bash
+scons platform=macos target=editor custom_modules=../../modules
+```
+
+##### Windows
+```bat
+scons platform=windows target=editor custom_modules=..\..\modules
+```
+
+---
+
+### ⚠️ Règle absolue
+
+> **Ne jamais livrer un projet Godot avec un module compilé en bibliothèque partagée.**
+
+La bibliothèque partagée est **strictement réservée au développement**.
