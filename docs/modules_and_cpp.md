@@ -55,7 +55,7 @@ Il explique notamment comment :
 
 - [9.0 Compilation d'un module C++ : statique (Template) vs bibliothèque partagée (Editor)](#9-compilation-statique-vs-bibliothèque-partagée-template--editor)
   - [9.1 Principe général](#91-principe-général)
-  - [9.2 SCsub unique avec switch DEV / PROD (recommandé)](#92-scsub-unique-avec-switch-dev--prod-recommandé)
+  - [9.2 SCsub unique avec switch DEV (Editor) / PROD (Template)](#92-scsub-unique-avec-switch-dev--prod-recommandé)
   - [9.3 Commandes SCons](#93-commandes-scons)
 
 <br />
