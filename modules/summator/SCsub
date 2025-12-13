@@ -1,3 +1,17 @@
 Import('env')
 
-env.add_source_files(env.modules_sources, "*.cpp") # Add all cpp files to the build
+
+env.add_source_files(env.modules_sources, "*.cpp") # Ajouter tous les fichiers .cpp à la compilation
+
+
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes,
+# vous pouvez les ajouter aux chemins d'accès de l'environnement :
+# env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
+# env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
+
+
+# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, 
+# vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la 
+# compilation Godot (ce qui peut entraîner des erreurs).
+# Ajouter les indicateurs CCFLAGS au code C et C++ : 
+# module_env.Append(CCFLAGS=['-O2'])

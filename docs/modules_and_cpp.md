@@ -7,7 +7,11 @@ Ce document explique comment :
 - utiliser des **classes C++ “pures”** pour faire de la vraie POO sans contraintes ;
 - créer des **vrais types visibles dans l’éditeur** (nodes et resources avec propriétés dans l’inspecteur).
 
+<br />
+
 ---
+
+<br />
 
 ## 0. Structure minimale d’un module C++ Godot
 
@@ -50,7 +54,11 @@ Rôle de chaque fichier :
 
 Ensuite, ce dossier de module doit être **placé à un endroit visible par le build** (voir section suivante).
 
+<br />
+
 ---
+
+<br />
 
 ## 1. Où mettre le module ?
 
@@ -94,7 +102,11 @@ cd dependencies/godot
 scons platform=windows target=editor custom_modules=..\..\modules
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## 2. `register_types.h / register_type.cpp` : ce qui est obligatoire et ce qui ne l’est pas
 
@@ -139,7 +151,11 @@ void uninitialize_summator_module(ModuleInitializationLevel p_level) {
 Vous **êtes obligé** de fournir ces deux fonctions pour que le module soit intégré en `nommant correctement` le `nom des deux fonctions` par rapport au `nom du dossier du module`,  
 mais **vous n’êtes pas obligé** d’y appeler `GDREGISTER_CLASS, GDREGISTER_ABSTRACT_CLASS..` si vous ne voulez rien exposer à Godot.
 
+<br />
+
 ---
+
+<br />
 
 ## 3. Fichiers de build : `SCsub` et `config.py`
 
@@ -149,12 +165,29 @@ Exemple minimal :
 # SCsub
 Import('env')
 
-# Ajouter tous les .cpp du module à la compilation
-env.add_source_files(env.modules_sources, "*.cpp")
+
+env.add_source_files(env.modules_sources, "*.cpp") # Ajouter tous les fichiers .cpp à la compilation
+
+
+# Pour ajouter des répertoires d'inclusion que le compilateur doit prendre en compte, comme des libraries externes,
+# vous pouvez les ajouter aux chemins d'accès de l'environnement :
+# env.Append(CPPPATH=["mylib/include"]) # Il s'agit d'un chemin relatif
+# env.Append(CPPPATH=["#myotherlib/include"]) # il s'agit d'un chemin absolu
+
+
+# Si vous souhaitez ajouter des options de compilation personnalisées lors de la création de votre module, 
+# vous devez d'abord cloner l'environnement afin que ces options ne soient pas ajoutées à l'ensemble de la 
+# compilation Godot (ce qui peut entraîner des erreurs).
+# Ajouter les indicateurs CCFLAGS au code C et C++ : 
+# module_env.Append(CCFLAGS=['-O2'])
 ```
 
 ```python
 # config.py
+
+# Documentation :
+# Le module est interrogé pour savoir s'il est possible de le compiler pour la plateforme spécifique (dans ce cas, True signifie qu'il sera compilé pour toutes les plateformes).
+
 def can_build(env, platform):
     return True
 
@@ -162,7 +195,11 @@ def configure(env):
     pass
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## 4. Les 5 types de classes C++ dans Godot
 
@@ -403,7 +440,11 @@ void uninitialize_mymodule_module(ModuleInitializationLevel p_level) {
 }
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## 5. _bind_methods() : les 5 choses que tu peux exposer à Godot
 
@@ -628,3 +669,77 @@ func _ready() -> void:
 func _on_dynamic_unit_died() -> void:
     print("Une unité créée en runtime est morte.")
 ```
+
+<br />
+
+---
+
+<br />
+
+## 6. Limite du nombre de paramètres bindés (5 par défaut → 13 avec `#include "core/method_bind_ext.gen.inc"`)
+
+Quand tu exposes des méthodes C++ d'une classe à Godot avec :
+
+```cpp
+ClassDB::bind_method(D_METHOD("my_func", "..."), &MyClass::my_func);
+```
+
+Godot utilise un système interne de *MethodBind* qui, **par défaut**, ne fournit les surcharges/templates que jusqu’à **5 paramètres**.
+
+✅ Donc : une méthode exposée avec **0 à 5 paramètres** marche.  
+⚠️ Si tu veux exposer une méthode avec **6 à 13 paramètres**, tu dois activer les binders étendus.
+
+### 6.1 Activer le binding étendu (jusqu’à 13 paramètres)
+
+Il suffit d’inclure le header suivant **dans le `.cpp` où tu fais tes `bind_method`** (souvent le fichier qui contient `_bind_methods()`) :
+
+```cpp
+#include "my_class.h"
+
+#include "core/object/class_db.h"
+#include "core/method_bind_ext.gen.inc" // Permet de binder des méthodes jusqu'à 13 paramètres
+```
+
+Ensuite tu peux binder une méthode avec plus de 5 paramètres :
+
+```cpp
+// my_class.h
+class MyClass : public Object {
+    GDCLASS(MyClass, Object);
+
+protected:
+    static void _bind_methods();
+
+public:
+    void do_big_thing(int a, int b, int c, int d, int e, int f);
+};
+```
+
+```cpp
+// my_class.cpp
+#include "my_class.h"
+
+#include "core/object/class_db.h"
+#include "core/method_bind_ext.gen.inc" // Permet de binder des méthodes jusqu'à 13 paramètres
+
+void MyClass::do_big_thing(int a, int b, int c, int d, int e, int f) {
+    // ...
+}
+
+void MyClass::_bind_methods() {
+    ClassDB::bind_method(
+        D_METHOD("do_big_thing", "a", "b", "c", "d", "e", "f"),
+        &MyClass::do_big_thing
+    );
+}
+```
+
+### 6.2 Recommandation (design)
+
+Même si tu peux monter à **13**, au-delà de ~5 paramètres, c’est souvent plus propre côté Godot de regrouper les paramètres dans :
+
+- une `Dictionary` (paramètres nommés) ;
+- une `Array` ;
+- ou une `Resource` / `Object` “Params” (plus typé, plus lisible et plus maintenable).
+
+> 💡 Astuce : si tu commences à avoir des signatures très longues, c’est souvent le signe qu’il faut regrouper ces valeurs dans une structure dédiée.
