@@ -80,7 +80,7 @@ Elles permettent de réagir à des événements que les callbacks classiques **n
 
 ## 1.0 Exemple - Notifications liées au Cycle de Vie
 
-> ⚠️ Déjà couvert dans le fichier principal (cycle de vie).  
+> ⚠️ Déjà couvert dans le fichier principal (lifecycle_node.md).  
 > On utilise généralement les callbacks `*_tree()`, `*_process()` à la place.
 
 | Notification | Explication |
