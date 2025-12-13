@@ -1033,26 +1033,31 @@ else:
 
 ### 9.3 Commandes SCons
 
-#### 🔧 Développement (bibliothèque partagée) - Pour l'editeur
+#### 🔧 Développement (bibliothèque partagée) - Pour l'editeur pendant le développement
 
 ##### Linux/BSD
 ```bash
-scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
+scons platform=linuxbsd target=editor profile=../../build-scripts/build_profile_editor.py custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
 ```
 
 Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
 ```bash
-scons platform=linuxbsd target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.linuxbsd.tools.64.so
+scons platform=linuxbsd target=editor profile=../../build-scripts/build_profile_editor.py custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.linuxbsd.tools.64.so
 ```
 
 ##### macOS
 ```bash
-scons platform=macos target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
+scons platform=macos target=editor profile=../../build-scripts/build_profile_editor.py custom_modules=../../modules summator_shared=yes redirect_build_objects="no"
 ```
 
 Compilation ciblée (accélérer la compilation en spécifiant explicitement votre module partagé comme cible) :
 ```bash
-scons platform=macos target=editor custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.?.tools.64.dylib
+scons platform=macos target=editor profile=../../build-scripts/build_profile_editor.py custom_modules=../../modules summator_shared=yes redirect_build_objects="no" bin/libsummator.?.tools.64.dylib
+```
+
+##### Windows (⚠️Pas de bibliothèque dynamique, compilation static même pour l'editeur)
+```bash
+scons platform=windows target=editor vsproj=yes vsproj_gen_only=no profile=..\..\build-scripts\build_profile_editor.py custom_modules=..\..\modules summator_shared=no
 ```
 
 ---
@@ -1061,17 +1066,17 @@ scons platform=macos target=editor custom_modules=../../modules summator_shared=
 
 ##### Linux / BSD
 ```bash
-scons platform=linuxbsd target=editor custom_modules=../../modules
+scons platform=linuxbsd target=template_release profile=../../build-scripts/build_profile_template_prod.py custom_modules=../../modules summator_shared=no
 ```
 
 ##### macOS
 ```bash
-scons platform=macos target=editor custom_modules=../../modules
+scons platform=macos target=template_release profile=../../build-scripts/build_profile_template_prod.py custom_modules=../../modules summator_shared=no
 ```
 
 ##### Windows
 ```bash
-scons platform=macos target=editor custom_modules=../../modules
+scons platform=macos target=template_release profile=..\..\build-scripts\build_profile_template_prod.py custom_modules=../../modules summator_shared=no
 ```
 
 ---
