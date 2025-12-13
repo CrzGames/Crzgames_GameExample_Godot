@@ -1083,6 +1083,6 @@ scons platform=macos target=template_release profile=..\..\build-scripts\build_p
 
 ### ⚠️ Règle absolue
 
-> **Ne jamais livrer un projet Godot avec un module compilé en bibliothèque partagée.**
+> **Ne jamais livrer un jeu Godot avec un module compilé en bibliothèque partagée.**
 
 La bibliothèque partagée est **strictement réservée au développement**.
