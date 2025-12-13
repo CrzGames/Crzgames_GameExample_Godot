@@ -957,7 +957,7 @@ L’idée est simple :
 
 ---
 
-### 9.2 SCsub unique avec switch DEV / PROD (recommandé)
+### 9.2 SCsub unique avec switch DEV (Editor) / PROD (Template)
 
 ```python
 # SCsub
