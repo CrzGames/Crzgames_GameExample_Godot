@@ -47,7 +47,7 @@ Objectif : comprendre **comment penser Godot**, pas seulement comment cliquer da
 
 ---
 
-## 1️⃣ Philosophie de design de Godot
+## 1. Philosophie de design de Godot
 
 Godot est conçu autour de **la composition orientée objet**, pas autour de composants.
 
@@ -62,7 +62,7 @@ Principes clés :
 
 ---
 
-## 2️⃣ Node (Nœud)
+## 2. Node (Nœud)
 
 ### Définition
 Un **Node** est un **objet actif** du moteur.
@@ -88,7 +88,7 @@ Chaque node a **une responsabilité claire**.
 
 ---
 
-## 3️⃣ Scene (Scène)
+## 3. Scene (Scène)
 
 ### Définition
 Une **Scene** est :
@@ -142,7 +142,7 @@ Lors de l’import :
 
 ---
 
-## 4️⃣ Resource (Ressource)
+## 4. Resource (Ressource)
 
 ### Définition
 Une **Resource** est une **donnée**, pas un objet vivant.
@@ -165,7 +165,7 @@ Exemples :
 
 ---
 
-## 5️⃣ SceneTree & MainLoop
+## 5. SceneTree & MainLoop
 
 ### Architecture interne simplifiée
 ```
@@ -192,7 +192,7 @@ get_tree()
 
 ---
 
-## 6️⃣ Viewport racine
+## 6. Viewport racine
 
 Le **Viewport racine** :
 - est le sommet de l’arbre
@@ -209,7 +209,7 @@ Tout node visible est **enfant d’un Viewport** (directement ou indirectement).
 
 ---
 
-## 7️⃣ Activation et cycle de vie
+## 7. Activation et cycle de vie
 
 Un Node devient “actif” quand il est **connecté** (directement ou indirectement) au **Viewport racine**.
 
@@ -223,7 +223,7 @@ Conséquence :
 
 ---
 
-## 8️⃣ Changement de scène courante
+## 8. Changement de scène courante
 
 ### Méthode simple (par chemin)
 ```gdscript
@@ -341,7 +341,7 @@ Pour être 100% safe : attendre `THREAD_LOAD_LOADED` (comme dans l’exemple pr�
 
 ---
 
-## 9️⃣ Modèle mental à retenir
+## 9. Modèle mental à retenir
 
 - **Node** → vit et agit (callbacks, hiérarchie)
 - **Scene** → structure et composition (arbre de nodes, réutilisable)
