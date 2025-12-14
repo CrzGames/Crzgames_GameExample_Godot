@@ -1,5 +1,5 @@
 # 📘 Godot 4.x — Threading (Multithreading)
-## Utiliser plusieurs fils d’exécution proprement (GDScript + C++)
+## Utiliser plusieurs fils d’exécution proprement (GDScript / C++)
 
 Les **threads** permettent d’exécuter du code **en parallèle** pour **décharger le thread principal** (celui qui gère le rendu, l’input, la logique de scène…).
 
@@ -209,7 +209,7 @@ void MultithreadingDemo::demo_threaded_function() {
 ### 2.1 Pourquoi un Mutex ?
 
 Même si “ça marche parfois”, accéder à une donnée depuis plusieurs threads **sans protection** peut provoquer :
-- valeurs incohérentes (race condition)
+- valeurs incohérentes (race condition, c'est à dire du code concurent)
 - crash (modification simultanée)
 - bugs “aléatoires” impossibles à reproduire
 
