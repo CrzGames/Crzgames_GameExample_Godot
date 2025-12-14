@@ -39,7 +39,6 @@ Objectif : comprendre **comment penser Godot**, pas seulement comment cliquer da
 
 - [8.1 Chargement d'une scène/ressource en arrière-plan (threaded) avec ResourceLoader](#81--chargement-dune-scèneressource-en-arrière-plan-threaded-avec-resourceloader)
   - [Exemple : charger une scène en arrière-plan + changer quand c’est prêt](#exemple--charger-une-scène-en-arrière-plan--changer-quand-cest-prêt)
-  - [Exemple “doc-style” : précharger une scène (ennemi) et instancier au clic](#exemple-doc-style--précharger-une-scène-ennemi-et-instancier-au-clic)
 
 - [9. Modèle mental à retenir](#9-modèle-mental-à-retenir)
 
