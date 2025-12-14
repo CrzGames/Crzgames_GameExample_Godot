@@ -209,7 +209,7 @@ void MultithreadingDemo::demo_threaded_function() {
 ### 2.1 Pourquoi un Mutex ?
 
 Même si “ça marche parfois”, accéder à une donnée depuis plusieurs threads **sans protection** peut provoquer :
-- valeurs incohérentes (race condition)
+- valeurs incohérentes (race condition, c'est à dire du code concurent)
 - crash (modification simultanée)
 - bugs “aléatoires” impossibles à reproduire
 
