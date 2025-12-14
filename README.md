@@ -28,7 +28,6 @@
 ├── 📄 README.md                      # Page d’accueil du dépôt (description, installation, exemples d’usage)
 ├── 📄 release-please-config.json     # Configuration pour `release-please` (outil Google de génération automatique de releases)
 ├── 📄 version.txt                    # Contient la version actuelle du projet (utilisé dans le build ou les releases)
-
 ```
 
 <br /><br /><br /><br />
@@ -110,7 +109,6 @@
   4. Download and Install Python >= 3.8.0 : https://www.python.org/downloads/ and add PATH ENVIRONMENT.
   5. Download and Install SCons >= 4.0.0, via Python : <br />
      python -m pip install scons (puis ajouté le binaire scons dans le PATH ENVIRONMENT)
-  6. Installer le SDK Vulkan pour la couche de validation (debug shaders..etc) : https://vulkan.lunarg.com/sdk/home
 
 
 
@@ -140,7 +138,14 @@ Ce script va :
 - Faire un `git reset --hard` au commit_sha/tag fourni
 - Initialiser les sous-modules si présents dans les librairies cloner
 
-4. Compiler l'editeur Godot Engine, depuis la racine de ce dépôt :
+4. Pour `Windows`, `le moteur de rendu Godot utilise à présent Direct3D12 par défault` à partir de la version >= `4.6.x` de Godot Engine au lieu de Vulkan, il faut lancer un script Python pour installer les dépendences :
+```bash
+cd dependencies/godot
+python misc/scripts/install_d3d12_sdk_windows.py
+```
+`Pour utiliser Vulkan par défault (déconseillé)` passé cela à `SCons` : `d3d12=no`.
+
+5. Compiler l'editeur Godot Engine, depuis la racine de ce dépôt :
 ```bash
 # Windows :
 .\build-scripts\windows\build_windows_editor.bat
@@ -159,12 +164,13 @@ chmod +x ./build-scripts/linux/build_linux_editor.sh
 
 ## 🔄 Updating Dependencies
 1. Modifiez le tag/commit_sha dans `dependencies.txt` de la librairie souhaiter.
-2. Supprimer le dossier de la librairie qu'ont a modifier la version, situé dans le dossier : dependencies/
-3. Exécutez le script à la racine du projet :
+2. Concernant les versions `snapshot` de Godot Engine comme `4.6-beta`, il faut récupérer le commit_sha du dernier commit, ici par exemple : https://godotengine.github.io/godot-interactive-changelog/, cliquer sur la version snapshot souhaiter et il y a le numéro du commit.
+3. Supprimer le dossier de la librairie qu'ont a modifier la version, situé dans le dossier : dependencies/
+4. Exécutez le script à la racine du projet :
 ```bash
 cmake -P cmake/setup_dependencies.cmake
 ```
-4. Recompiler l'editeur Godot avec les scripts situé dans `build-scripts/` à la racine du projet :
+5. Recompiler l'editeur Godot avec les scripts situé dans `build-scripts/` à la racine du projet :
 ```bash
 # Windows :
 .\build-scripts\windows\build_windows_editor.bat

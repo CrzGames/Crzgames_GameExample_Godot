@@ -28,9 +28,7 @@ echo -------------------------
   --verbose ^
   --debug ^
   --gpu-validation ^
-  --gpu-abort ^
-  --gpu-profile
-REM --generate-spirv-debug-info (désactivé pour bug SPIR-V)
+  --gpu-abort
 
 endlocal
 exit /b 0
