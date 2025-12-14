@@ -321,26 +321,6 @@ func _process(_delta: float) -> void:
 
 ---
 
-### Exemple “doc-style” : précharger une scène (ennemi) et instancier au clic
-
-```gdscript
-const ENEMY_SCENE_PATH : String = "res://Enemy.tscn"
-
-func _ready() -> void:
-    ResourceLoader.load_threaded_request(ENEMY_SCENE_PATH)
-    $Button.pressed.connect(_on_button_pressed)
-
-func _on_button_pressed() -> void:
-    var enemy_scene := ResourceLoader.load_threaded_get(ENEMY_SCENE_PATH) as PackedScene
-    var enemy := enemy_scene.instantiate()
-    add_child(enemy)
-```
-
-⚠️ Si tu appelles `load_threaded_get()` trop tôt, ça peut bloquer.  
-Pour être 100% safe : attendre `THREAD_LOAD_LOADED` (comme dans l’exemple précédent).
-
----
-
 ## 9. Modèle mental à retenir
 
 - **Node** → vit et agit (callbacks, hiérarchie)
