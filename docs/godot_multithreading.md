@@ -1,5 +1,5 @@
 # 📘 Godot 4.x — Threading (Multithreading)
-## Utiliser plusieurs fils d’exécution proprement (GDScript + C++)
+## Utiliser plusieurs fils d’exécution proprement (GDScript / C++)
 
 Les **threads** permettent d’exécuter du code **en parallèle** pour **décharger le thread principal** (celui qui gère le rendu, l’input, la logique de scène…).
 
