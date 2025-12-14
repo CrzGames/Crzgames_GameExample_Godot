@@ -11,42 +11,39 @@ Objectif : comprendre **comment penser Godot**, pas seulement comment cliquer da
 
 - [1. Philosophie de design de Godot](#1-philosophie-de-design-de-godot)
 
-- [2. Node (Nœud)](#2-node-nœud)  
-  - [2.1 Définition et rôle d’un Node](#21-définition-et-rôle-dun-node)  
-  - [2.2 Exemple de hiérarchie de Nodes](#22-exemple-de-hiérarchie-de-nodes)
+- [2. Node (Nœud)](#2-node-nœud)
+  - [Définition](#définition)
+  - [Exemple](#exemple)
 
-- [3. Scene (Scène)](#3-scene-scène)  
-  - [3.1 Définition d’une Scene](#31-définition-dune-scene)  
-  - [3.2 Formats de fichiers de scène (.tscn / .scn / .escn)](#32-formats-de-fichiers-de-scène-tscn--scn--escn)  
-    - [3.2.1 TSCN — Text Scene](#321-tscn--text-scene)  
-    - [3.2.2 SCN — Binary Scene](#322-scn--binary-scene)  
-    - [3.2.3 ESCN — Exported Scene](#323-escn--exported-scene)
+- [3. Scene (Scène)](#3-scene-scène)
+  - [Définition](#définition-1)
+  - [Formats de fichiers de scène (.tscn/ .scn / .escn)](#formats-de-fichiers-de-scène-tscn-scn--escn)
+    - [TSCN — Text Scene](#tscn--text-scene)
+    - [SCN — Binary Scene](#scn--binary-scene)
+    - [ESCN — Exported Scene](#escn--exported-scene)
 
-- [4. Resource (Ressource)](#4-resource-ressource)  
-  - [4.1 Définition et caractéristiques](#41-définition-et-caractéristiques)  
-  - [4.2 PackedScene comme Resource](#42-packedscene-comme-resource)
+- [4. Resource (Ressource)](#4-resource-ressource)
+  - [Définition](#définition-2)
 
-- [5. SceneTree & MainLoop](#5-scenetree--mainloop)  
-  - [5.1 Architecture interne simplifiée](#51-architecture-interne-simplifiée)  
-  - [5.2 Rôle du SceneTree](#52-rôle-du-scenetree)
+- [5. SceneTree & MainLoop](#5-scenetree--mainloop)
+  - [Architecture interne simplifiée](#architecture-interne-simplifiée)
 
 - [6. Viewport racine](#6-viewport-racine)
 
-- [7. Activation et cycle de vie des Nodes](#7-activation-et-cycle-de-vie-des-nodes)
+- [7. Activation et cycle de vie](#7-activation-et-cycle-de-vie)
 
-- [8. Changement de scène courante](#8-changement-de-scène-courante)  
-  - [8.1 Méthode simple (change_scene_to_file)](#81-méthode-simple-change_scene_to_file)  
-  - [8.2 Méthode via PackedScene (préchargement)](#82-méthode-via-packedscene-préchargement)  
-  - [8.3 Pourquoi le changement de scène est bloquant](#83-pourquoi-le-changement-de-scène-est-bloquant)
+- [8. Changement de scène courante](#8-changement-de-scène-courante)
+  - [Méthode simple (par chemin)](#méthode-simple-par-chemin)
+  - [Méthode via PackedScene (préchargement)](#méthode-via-packedscene-préchargement)
+  - [Pourquoi c’est “bloquant” ?](#pourquoi-cest-bloquant)
 
-- [8.4 Chargement en arrière-plan (threaded) avec ResourceLoader](#84-chargement-en-arrière-plan-threaded-avec-resourceloader)  
-  - [8.4.1 Workflow du chargement asynchrone](#841-workflow-du-chargement-asynchrone)  
-  - [8.4.2 Exemple : chargement + changement de scène sans freeze](#842-exemple--chargement--changement-de-scène-sans-freeze)  
-  - [8.4.3 Exemple type documentation (préchargement d’un ennemi)](#843-exemple-type-documentation-préchargement-dun-ennemi)
+- [8.1 Chargement d'une scène/ressource en arrière-plan (threaded) avec ResourceLoader](#81--chargement-dune-scèneressource-en-arrière-plan-threaded-avec-resourceloader)
+  - [Exemple : charger une scène en arrière-plan + changer quand c’est prêt](#exemple--charger-une-scène-en-arrière-plan--changer-quand-cest-prêt)
+  - [Exemple “doc-style” : précharger une scène (ennemi) et instancier au clic](#exemple-doc-style--précharger-une-scène-ennemi-et-instancier-au-clic)
 
 - [9. Modèle mental à retenir](#9-modèle-mental-à-retenir)
 
-- [10. Références (documentation officielle)](#10-références-documentation-officielle)
+- [10. Références (doc officielle)](#10-références-doc-officielle)
 
 ---
 
@@ -363,5 +360,7 @@ Pour être 100% safe : attendre `THREAD_LOAD_LOADED` (comme dans l’exemple pr�
 - Changer la scène courante :
   https://docs.godotengine.org/fr/4.x/tutorials/scripting/scene_tree.html#changing-current-scene
 
-- Chargement en arrière-plan une nouvelle scène (Background loading) :
+- Chargement en arrière-plan d'une nouvelle scène/ressource (Background loading) :
   https://docs.godotengine.org/fr/4.x/tutorials/io/background_loading.html#doc-background-loading
+
+- Format de fichiers Godot (.tscn, .esn..etc) : https://docs.godotengine.org/fr/4.x/engine_details/file_formats/tscn.html
