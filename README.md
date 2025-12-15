@@ -95,7 +95,7 @@
 <br /><br /><br /><br />
 
 
-## Jeu projet godot déjà configurer 
+## Jeu projet godot déjà configurer dans les paramètres de l'editeur Godot
 - Activation de **Nearest** pour toutes les textures
 - Résolution logique (**640×360**)
 - Etirement :
