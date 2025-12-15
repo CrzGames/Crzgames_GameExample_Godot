@@ -178,7 +178,7 @@ chmod +x ./build-scripts/linux/build_linux_editor.sh
 
 ## 🔄 Updating Dependencies
 1. Modifiez le tag/commit_sha dans `dependencies.txt` de la librairie souhaiter.
-2. Concernant les versions `snapshot` de Godot Engine comme `4.6-beta`, il faut récupérer le commit_sha du dernier commit, ici par exemple : https://godotengine.github.io/godot-interactive-changelog/, cliquer sur la version snapshot souhaiter et il y a le numéro du commit.
+2. Concernant les versions `snapshot` de Godot Engine comme `4.6-beta1`, il faut récupérer le commit_sha du dernier commit, ici par exemple : https://godotengine.github.io/godot-interactive-changelog/, cliquer sur la version snapshot souhaiter et il y a le numéro du commit.
 3. Supprimer le dossier de la librairie qu'ont a modifier la version, situé dans le dossier : dependencies/
 4. Exécutez le script à la racine du projet :
 ```bash
