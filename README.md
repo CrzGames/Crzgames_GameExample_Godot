@@ -95,6 +95,19 @@
 <br /><br /><br /><br />
 
 
+## Jeu projet godot déjà configurer 
+- Activation de **Nearest** pour toutes les textures
+- Résolution logique (**640×360**)
+- Etirement :
+  - `Mode` : **`viewport`** pour un rendu pixel art rétro / pixel-perfect
+  - `Aspect` : **`keep`** si tu veux un cadrage strict (bandes noires acceptées si besoin, letterbox/pillarbox)
+  - `Mode mise à l'échelle`  : 1.0
+  - `Mode de misee à l'échelle` : integer
+
+
+<br /><br /><br /><br />
+
+
 ## ⚙️ Setup Environment Development
 1. Cloner le projet :
   ```bash
