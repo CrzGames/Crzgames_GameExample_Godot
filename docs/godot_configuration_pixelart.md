@@ -17,7 +17,8 @@ Objectif : obtenir un rendu **net**, **pixel-perfect**, sans flou, avec une **mi
 8. [GUI & Fonts — Anticrénelage](#8-gui--fonts--anticrénelage)
 9. [Écran de démarrage (Splash Screen)](#9-écran-de-démarrage-splash-screen)
 10. [Rendu 2D — Pixel Snap (Transform & Vertices)](#10-rendu-2d--pixel-snap-transform--vertices)
-11. [Conclusion](#11-conclusion)
+11. [Résolution logique vs résolution réelle de la fenêtre](#11-résolution-logique-vs-résolution-réelle-de-la-fenêtre)
+12. [Conclusion](#12-conclusion)
 
 ---
 
@@ -202,7 +203,50 @@ Pour garantir un rendu **pixel-perfect**, il est recommandé d’activer le *pix
 
 ---
 
-## 11) Conclusion
+## 11) Résolution logique vs résolution réelle de la fenêtre
+
+On explique qu'il faut choisir sa **résolution logique**, mais il existe aussi les paramètres **Override Width / Override Height** (ex: 1920×1080) : ce n'est pas la même chose.
+
+📍 **Project Settings → Display → Window → Size**
+
+### 🔹 Résolution logique (Width / Height)
+
+- `Width` / `Height` définissent la **résolution interne du jeu** (design size).
+- Exemple pixel art recommandé : **640×360**.
+- C’est cette résolution qui doit rester **stable** pour garantir :
+  - un rendu cohérent,
+  - un pixel-perfect fiable,
+  - une logique caméra/UI prédictible.
+
+👉 Avec `Stretch Mode = viewport` et `integer`, le jeu est rendu en 640×360 puis upscalé proprement.
+
+---
+
+### 🔹 Résolution réelle de la fenêtre (Override Width / Override Height)
+
+- `Window Width Override` / `Window Height Override` définissent la **taille réelle de la fenêtre** (ou de l’affichage) au lancement.
+- Exemples :
+  - **1280×720**
+  - **1920×1080**
+  - **2560×1440**
+
+👉 Ces paramètres **ne changent pas la résolution logique**, ils ne font que définir la taille finale de la fenêtre, sur laquelle Godot applique l’upscale.
+
+---
+
+### ✅ Bonnes pratiques (pixel art)
+
+- ✔ Garder `Width/Height` (résolution logique) fixe (ex: **640×360**).
+- ✔ Utiliser `Override Width/Height` pour forcer une fenêtre de test (ex: **1280×720** ou **1920×1080**).
+- ✔ Conserver `viewport` + `integer` pour un upscale propre.
+
+❌ Ne pas confondre :
+- changer la résolution logique (ça change le jeu),
+- avec override de fenêtre (ça change juste la taille de sortie).
+
+---
+
+## 12) Conclusion
 
 Pour un projet pixel art sous Godot 4.x :
 
