@@ -95,7 +95,7 @@
 <br /><br /><br /><br />
 
 
-## Projet Godot du jeu ce qui est déjà configurer
+## Projet Godot du jeu ce qui est déjà configurer depuis l'éditeur Godot.
 - Activation de **Nearest** pour toutes les textures
 - Résolution logique du jeu par défault (**640×360**)
 - Résolution de la fenetre par défault lors de l'ouverture (**1280x720**)
