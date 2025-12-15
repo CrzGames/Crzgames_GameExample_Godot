@@ -105,6 +105,7 @@
   - `Mode mise à l'échelle`  : 1.0
   - `Mode de misee à l'échelle` : integer
 - Désactiver l'antialliasing pour les fonts quand on'ai en PixelArt
+- Activation du HDR 2D.
 
 <br /><br /><br /><br />
 
