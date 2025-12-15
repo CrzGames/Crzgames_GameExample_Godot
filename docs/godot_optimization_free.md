@@ -90,7 +90,7 @@ Exemples :
 
 La VRAM est libérée quand :
 - la ressource GPU (texture, mesh…) n’est plus référencée
-- le moteur **et le driver GPU** effectuent réellement la purge (souvent différée)
+- `le moteur libére la mémoire automatiquement ce n'ai pas à nous de le faire`.
 
 Donc :
 - `queue_free()` libère **le Node**
@@ -134,6 +134,7 @@ Exemples :
 - `Node2D`
 - `Control`
 - `Object` (classe de base)
+- ...
 
 ➡️ Ces objets **DOIVENT** être supprimés manuellement via :
 - `queue_free()` (recommandé pour les Nodes)
@@ -153,16 +154,3 @@ Exemples :
 
 👉 **Supprimer un Node ne libère pas forcément la VRAM**    
 👉 **Libérer une Resource sans référence libère RAM + VRAM**
-
----
-
-## Conclusion clé
-
-- `queue_free()` gère **le cycle de vie des Nodes**
-- `RefCounted` gère **automatiquement les ressources**
-- La **mémoire GPU** dépend presque exclusivement des `Resource`
-- Le vrai levier d’optimisation :
-  - casser les références
-  - éviter les duplications
-  - comprendre ce qui est `RefCounted` ou non
-
