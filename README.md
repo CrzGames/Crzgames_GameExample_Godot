@@ -97,14 +97,14 @@
 
 ## Jeu projet godot déjà configurer dans les paramètres de l'editeur Godot
 - Activation de **Nearest** pour toutes les textures
-- Résolution logique (**640×360**)
-- Résolution de la fenetre (**1920x1080**)
+- Résolution logique du jeu par défault (**640×360**)
+- Résolution de la fenetre par défault lors de l'ouverture (**1280x720**)
 - Etirement :
   - `Mode` : **`viewport`** pour un rendu pixel art rétro / pixel-perfect
   - `Aspect` : **`keep`** si tu veux un cadrage strict (bandes noires acceptées si besoin, letterbox/pillarbox)
   - `Mode mise à l'échelle`  : 1.0
   - `Mode de misee à l'échelle` : integer
-
+- Désactiver l'antialliasing pour les fonts quand on'ai en PixelArt
 
 <br /><br /><br /><br />
 
