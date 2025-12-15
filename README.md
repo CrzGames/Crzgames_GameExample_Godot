@@ -101,7 +101,7 @@
 - Résolution de la fenetre par défault lors de l'ouverture (**1280x720**)
 - Etirement :
   - `Mode` : **`viewport`** pour un rendu pixel art rétro / pixel-perfect
-  - `Aspect` : **`keep`** si tu veux un cadrage strict (bandes noires acceptées si besoin, letterbox/pillarbox)
+  - `Aspect` : **`keep`** (bandes noires acceptées si besoin, letterbox/pillarbox)
   - `Mode mise à l'échelle`  : 1.0
   - `Mode de misee à l'échelle` : integer
 - Désactiver l'antialliasing pour les fonts quand on'ai en PixelArt
