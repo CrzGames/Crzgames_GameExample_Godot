@@ -16,7 +16,8 @@ Objectif : obtenir un rendu **net**, **pixel-perfect**, sans flou, avec une **mi
 7. [Résolution de base “universelle” pour le pixel art](#7-résolution-de-base-universelle-pour-le-pixel-art)
 8. [GUI & Fonts — Anticrénelage](#8-gui--fonts--anticrénelage)
 9. [Écran de démarrage (Splash Screen)](#9-écran-de-démarrage-splash-screen)
-10. [Conclusion](#10-conclusion)
+10. [Rendu 2D — Pixel Snap (Transform & Vertices)](#10-rendu-2d--pixel-snap-transform--vertices)
+11. [Conclusion](#11-conclusion)
 
 ---
 
@@ -165,7 +166,43 @@ Recommandations :
 
 ---
 
-## 10) Conclusion
+## 10) Rendu 2D — Pixel Snap (Transform & Vertices)
+
+Godot utilise par défaut des **coordonnées flottantes**, ce qui peut provoquer des **demi-pixels**, du **flou** ou des **micro-tremblements** en pixel art, notamment lors des déplacements de caméra.
+
+Pour garantir un rendu **pixel-perfect**, il est recommandé d’activer le *pixel snapping* côté rendu 2D.
+
+📍 **Project Settings → Rendering → 2D**
+
+### ✅ Snap 2D Transforms to Pixel (RECOMMANDÉ)
+
+- **Activer** ✅
+- Force l’alignement des `CanvasItem` (Sprite2D, TileMap, etc.) sur des **coordonnées entières au rendu**
+- Réduit fortement :
+  - le flou
+  - les artefacts visuels
+  - le jitter lors des déplacements
+
+➡️ **À activer systématiquement pour les projets pixel art**.
+
+---
+
+### ❌ Snap 2D Vertices to Pixel (généralement désactivé)
+
+- **Laisser désactivé** ❌ dans la majorité des cas
+- Utile surtout pour :
+  - `Polygon2D`
+  - `Line2D`
+  - formes vectorielles
+
+⚠️ Sur des jeux basés sur des **sprites et tilemaps**, ce réglage n’apporte généralement aucun bénéfice et peut accentuer un rendu saccadé.
+
+📌 **Éviter d’activer les deux options simultanément**.  
+👉 Pour le pixel art classique, **Transforms suffit**.
+
+---
+
+## 11) Conclusion
 
 Pour un projet pixel art sous Godot 4.x :
 
@@ -174,6 +211,7 @@ Pour un projet pixel art sous Godot 4.x :
 - Stretch Scale Mode : **integer**
 - GUI Font Antialiasing : **None**
 - Splash Screen Filter : **désactivé**
+- Snap 2D Transforms to Pixel : **activé**
 
 Choisir :
 - `viewport` → pixel art rétro strict

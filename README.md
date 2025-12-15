@@ -104,8 +104,9 @@
   - `Aspect` : **`keep`** (bandes noires acceptées si besoin, letterbox/pillarbox)
   - `Mode mise à l'échelle`  : 1.0
   - `Mode de misee à l'échelle` : integer
-- Désactiver l'antialliasing pour les fonts quand on'ai en PixelArt
-- Activation du HDR 2D.
+- Désactivation **l'antialliasing pour les fonts**.
+- Désactivation du **HDR 2D**.
+- Activation de **Snap 2D Transforms to Pixel**.
 
 <br /><br /><br /><br />
 
