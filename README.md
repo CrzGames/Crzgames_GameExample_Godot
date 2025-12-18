@@ -134,9 +134,7 @@
   3. Download and Install Command Line Tools : xcode-select --install
   4. Download and Install brew.
   5. Download and Install CMake >= 3.25.0 : brew install cmake
-  6. Download and Install scons >= 4.0.0 : brew install scons
-  7. Download and Install Python >= 3.8.0 : brew install python
-
+  6. Download and Install scons >= 4.0.0 et Python >= 3.8.0 (cela installera également le package Python avec) : brew install scons
 
 
   # Linux :
