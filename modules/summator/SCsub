@@ -64,7 +64,7 @@ if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linu
         # Requirements : Xcode 15 ou une version ultérieure
         module_env.Append(LINKFLAGS=["-Wl,-undefined,dynamic_lookup"])
         remove_stack_size_flags(module_env)
-        shared_target = "#bin/libsummator"
+        shared_target = "#bin/summator"
 
     # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
     # mais il est préférable de la placer dans `bin` à côté du binaire Godot.
