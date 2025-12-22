@@ -20,7 +20,8 @@ scons \
     generate_bundle=yes \
     vulkan=no \
     profile="../../build-scripts/build_profile_editor.py" \
-    custom_modules="../../modules"
+    custom_modules="../../modules" \
+    summator_shared=yes
 
 SCONS_ERRORLEVEL=$?
 echo "SCONS ERRORLEVEL: $SCONS_ERRORLEVEL"

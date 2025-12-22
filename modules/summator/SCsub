@@ -15,6 +15,32 @@ module_env = env.Clone()
 # Ajouter les indicateurs CCFLAGS au code C et C++ : 
 # module_env.Append(CCFLAGS=['-O2']) # Exemple d'optimisation de compilation
 
+def remove_stack_size_flags(e):
+    # LINKFLAGS peut être list/tuple selon SCons
+    flags = list(e.get("LINKFLAGS", []))
+
+    cleaned = []
+    skip_next = False
+
+    for f in flags:
+        if skip_next:
+            # cas: "-Wl,-stack_size" puis "0x4000000" (ou nombre) séparé
+            skip_next = False
+            continue
+
+        # Cas token séparé
+        if f in ("-stack_size", "-Wl,-stack_size"):
+            skip_next = True
+            continue
+
+        # Cas token unique (le plus fréquent): "-Wl,-stack_size,0x4000000"
+        if "stack_size" in str(f):
+            continue
+
+        cleaned.append(f)
+
+    e["LINKFLAGS"] = cleaned
+
 platform = env.get("platform", "")
 
 if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linuxbsd", "macos"):
@@ -31,11 +57,14 @@ if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linu
     if env["platform"] == "linuxbsd":
         # Le module .so résout des symboles depuis l'exécutable Godot
         module_env.Append(LINKFLAGS=["-rdynamic"])
+        shared_target = "#bin/summator"
 
     if env["platform"] == "macos":
         # Ceci indique à l'éditeur de liens que les symboles sont externes et seront donc liés dynamiquement.
         # Requirements : Xcode 15 ou une version ultérieure
         module_env.Append(LINKFLAGS=["-Wl,-undefined,dynamic_lookup"])
+        remove_stack_size_flags(module_env)
+        shared_target = "#bin/libsummator"
 
     # Définir la bibliothèque partagée. Par défaut, elle serait créée dans le dossier du module,
     # mais il est préférable de la placer dans `bin` à côté du binaire Godot.
@@ -43,7 +72,7 @@ if ARGUMENTS.get("summator_shared", "no") == "yes" and env["platform"] in ("linu
     # - Linux/BSD : libsummator.*.so
     # - macOS     : libsummator.*.dylib
     shared_lib = module_env.SharedLibrary(
-        target='#bin/summator',
+        target=shared_target,
         source=sources
     )
         
